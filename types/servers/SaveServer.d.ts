@@ -14,7 +14,7 @@ export declare class SaveServer {
     protected logger: ILogger;
     protected profileFilepath: string;
     protected profiles: {};
-    protected onSave: {};
+    protected onBeforeSaveCallbacks: {};
     protected saveMd5: {};
     constructor(vfs: VFS, saveLoadRouters: SaveLoadRouter[], jsonUtil: JsonUtil, hashUtil: HashUtil, localisationService: LocalisationService, logger: ILogger);
     load(): void;
@@ -27,4 +27,6 @@ export declare class SaveServer {
     loadProfile(sessionID: string): void;
     saveProfile(sessionID: string): void;
     removeProfile(sessionID: string): boolean;
+    addBeforeSaveCallback(id: string, callback: (profile: Partial<IAkiProfile>) => Partial<IAkiProfile>): void
+    removeBeforeSaveCallback(id: string): void
 }
