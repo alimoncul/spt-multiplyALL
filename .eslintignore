@@ -8,4 +8,6 @@ types/
 *.txt
 *.exe
 
+src/html/*
+
 packageBuild.js

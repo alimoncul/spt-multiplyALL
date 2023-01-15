@@ -8,7 +8,6 @@ const ignoreList = [
     ".vscode/",
     "node_modules/",
     // "node_modules/!(weighted|glob)", // Instead of excluding the entire node_modules directory, allow two node modules.
-    "src/**/*.js",
     "types/",
     ".git/",
     ".gitea/",
