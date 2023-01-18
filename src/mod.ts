@@ -5,39 +5,52 @@ import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
 import { SaveServer } from "@spt-aki/servers/SaveServer";
 import config from "../config.json";
 import http from "http";
-import fs from "fs";
+import GetActions from "./get";
+import PostActions from "./post";
 
 class DebugTools implements IPostAkiLoadMod 
 {
     public port = config.port || 8080;
     public postAkiLoad(container: DependencyContainer): void 
     {
-        const logger = container.resolve<ILogger>("WinstonLogger");
         const saveServer: SaveServer = container.resolve<SaveServer>("SaveServer");
+        this.initializeHttpServer(container);
+    } 
+    initializeHttpServer(container: DependencyContainer) 
+    { 
+        const logger = container.resolve<ILogger>("WinstonLogger");
         http.createServer(function (req, res) 
         {
-            console.log(req.url);
-            if (req.url === "/debugtools") 
+            logger.info(`[DebugTools]15 [${req.method}] ${req.url}`);
+            if (req.method === "POST") 
             {
-                res.writeHead(200, { "Content-type": "text/html" });
-                const html = fs.readFileSync(__dirname + "/html/index.html");
-                res.write(html);
-                res.end();
-            }
-            else if (req.url.indexOf(".js") !== -1) 
-            {
-                res.writeHead(200, { "Content-Type": "text/javascript" });
-                const js = fs.readFileSync(__dirname + "/html/" + req.url);
-                res.write(js);
-                res.end();
+                if (req.url === "/add-money") 
+                {
+                    return PostActions.addMoney(res);
+                }
+                else 
+                {
+                    return PostActions.returnNotFound(res);
+                }
             }
             else 
             {
-                res.statusCode = 404;
-                res.setHeader("Content-type", "text/html");
-                const html = fs.readFileSync(__dirname + "/html/notfound.html");
-                res.write(html);
-                res.end();
+                if (req.url === "/debugtools") 
+                {
+                    return GetActions.returnDashboard(res);
+                }
+                else if (req.url.indexOf(".js") !== -1) 
+                {
+                    return GetActions.returnJavascript(req, res);
+                }
+                else if (req.url.indexOf(".ico") !== -1) 
+                {
+                    return GetActions.returnIcon(req, res);
+                }
+                else 
+                {
+                    return GetActions.returnNotFound(res);
+                }
             }
             // saveServer.addBeforeSaveCallback("debugTools", (profile) => 
             // {
@@ -46,8 +59,6 @@ class DebugTools implements IPostAkiLoadMod
             //     return profile;
             // })
         }).listen(this.port);
-
-        // logger.info(`hello from the mod: ${saveServer.getProfiles()}`);
     }
 }
 

@@ -9,16 +9,19 @@
         "node": "16.17.1"
     },
     "scripts": {
-        "build": "node ./packageBuild.js",
-        "watch": "node ./packageBuild.js --watch"
+        "createRelease": "node ./packageBuild.js",
+        "watch": "tsc --build && tsc --watch",
+        "lint": "eslint ./src"
     },
     "devDependencies": {
+        "@types/i18n": "0.13.6",
+        "@types/jquery": "^3.5.16",
         "@types/node": "16.18.10",
         "@typescript-eslint/eslint-plugin": "5.46.1",
         "@typescript-eslint/parser": "5.46.1",
         "bestzip": "2.2.1",
         "chokidar": "^3.5.3",
-        "eslint": "8.30.0",
+        "eslint": "^8.32.0",
         "fs-extra": "11.1.0",
         "glob": "8.0.3",
         "tsyringe": "4.7.0",

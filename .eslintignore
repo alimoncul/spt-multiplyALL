@@ -11,3 +11,4 @@ types/
 src/html/*
 
 packageBuild.js
+copy-server.js

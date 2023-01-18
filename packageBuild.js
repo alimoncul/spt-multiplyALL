@@ -7,7 +7,6 @@ const { author, name: packageName, version } = require("./package.json");
 const ignoreList = [
     ".vscode/",
     "node_modules/",
-    // "node_modules/!(weighted|glob)", // Instead of excluding the entire node_modules directory, allow two node modules.
     "types/",
     ".git/",
     ".gitea/",
@@ -16,9 +15,14 @@ const ignoreList = [
     ".gitignore",
     ".DS_Store",
     "packageBuild.js",
+    "copy-server.js",
     "mod.code-workspace",
     "package-lock.json",
-    "tsconfig.json"
+    "yarn.lock",
+    "tsconfig.json",
+    "yarn-error.log",
+    "README.md",
+    "dist/"
 ];
 
 // Generate the name of the package, stripping out all non-alphanumeric characters in the 'author' and 'name'.
@@ -44,9 +48,6 @@ function copyFiles(exclude) {
     fs.moveSync(path.normalize(`${__dirname}/../~${modName}`), path.normalize(`${__dirname}/${modName}`), { overwrite: true });
     fs.copySync(path.normalize(`${__dirname}/${modName}`), path.normalize(`${__dirname}/dist`));
     console.log("Build files copied.");
-    // Copy files to server as well.
-    fs.copySync(path.normalize(`${__dirname}/dist`), path.normalize(`${__dirname}/../Server/project/user/mods/${modName}`));
-    console.log("Build files copied to server.");
 }
 
 function compress() {
@@ -72,19 +73,5 @@ function build() {
     compress();
 }
 
-const shouldWatch = process.argv.some((arg) => arg === "--watch");
-if (shouldWatch) {
-    var chokidar = require('chokidar');
-    var watcher = chokidar.watch(__dirname + "/src", { ignored: /^\./, persistent: true });
-
-    watcher
-        .on('ready', function (path) { build() })
-        .on('change', function (path) {
-            console.log('File', path, 'has been changed.');
-            build();
-        })
-        .on('error', function (error) { console.error('Error happened', error); })
-} else {
-    build();
-}
+build();
 
