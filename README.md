@@ -1,3 +1,3 @@
-## DebugTools
+## MultiplyALL
 
-Debug panel mod made for SPT. Live save editor.
+Multiple all the things for SPT

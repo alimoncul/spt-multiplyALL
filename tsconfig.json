@@ -9,7 +9,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
-    "outDir": "../Server/project/user/mods/AlimOncul-DebugTools-0.0.1",
+    "outDir": "../spt/Server/project/user/mods/AlimOncul-MultiplyALL-1.0.0",
     "baseUrl": ".",
     "paths": {
       "@spt-aki/*": [

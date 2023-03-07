@@ -1,3 +1,29 @@
 {
-    "port": 8080
+    "=== If you want to disable any multiplication use value 1 ===": "< Description",
+    "experience": {
+        "=== Multiplies the experience of the daily & weekly tasks ===": "< Description",
+        "dailyWeeklyMultiplier": 2,
+
+        "=== Multiplies the experience of quests ===": "< Description",
+        "questMultiplier": 2,
+
+        "=== Multiplies the experience of examination on items ===": "< Description",
+        "examineMultiplier": 2,
+
+        "=== Multiplies the experience of raid exit statuses (survived_exp_reward and mia_exp_reward and runner_exp_reward) ===": "< Description",
+        "raidExitMultiplier": 2,
+
+        "=== Multiplies the skill progression rate ===": "< Description",
+        "skillMultiplier": 2,
+
+        "=== Multiplies the weapon skill progression rate ===": "< Description",
+        "weaponSkillMultiplier": 2
+    },
+    "loot": {
+        "=== Multiplies the static loot rate ===": "< Description",
+        "staticLootMultiplier": 1.2,
+
+        "=== Multiplies the loose loot rate ===": "< Description",
+        "looseLootMultiplier": 1.2
+    }
 }
