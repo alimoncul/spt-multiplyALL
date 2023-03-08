@@ -88,9 +88,9 @@ class MultiplyALL implements IPostDBLoadMod
         const logger = container.resolve<ILogger>("WinstonLogger");
         if (config.experience.raidExitMultiplier !== 1) 
         {
-            this.tables.globals.config.exp.match_end.survived_exp_reward *= config.experience.raidExitMultiplier;
-            this.tables.globals.config.exp.match_end.mia_exp_reward *= config.experience.raidExitMultiplier;
-            this.tables.globals.config.exp.match_end.runner_exp_reward *= config.experience.raidExitMultiplier;
+            this.tables.globals.config.exp.match_end.survived_exp_reward = Math.round(this.tables.globals.config.exp.match_end.survived_exp_reward * config.experience.raidExitMultiplier);
+            this.tables.globals.config.exp.match_end.mia_exp_reward = Math.round(this.tables.globals.config.exp.match_end.mia_exp_reward * config.experience.raidExitMultiplier);
+            this.tables.globals.config.exp.match_end.runner_exp_reward = Math.round(this.tables.globals.config.exp.match_end.runner_exp_reward * config.experience.raidExitMultiplier);
             logger.info(`[MultiplyALL-XP]: RaidExitExperience multiplied by: ${config.experience.raidExitMultiplier}`);
         }
     }
@@ -98,7 +98,7 @@ class MultiplyALL implements IPostDBLoadMod
     {
         const logger = container.resolve<ILogger>("WinstonLogger");
         const items = this.tables.templates.items;
-        const updated = 0;
+        let updated = 0;
         if (config.experience.examineMultiplier !== 1) 
         {
             for (let i = 0; i < Object.keys(items).length; i+=1) 
@@ -107,7 +107,8 @@ class MultiplyALL implements IPostDBLoadMod
                 const examineExperience = item?._props?.ExamineExperience;
                 if (examineExperience >= 0) 
                 {
-                    items[Object.keys(items)[i]]._props.ExamineExperience = examineExperience * config.experience.examineMultiplier;
+                    items[Object.keys(items)[i]]._props.ExamineExperience = Math.round(examineExperience * config.experience.examineMultiplier);
+                    updated +=1;
                 }
             }
             logger.info(`[MultiplyALL-XP]: ExamineExperience multiplied by: ${config.experience.examineMultiplier}, Total Items Updated: ${updated}`);
@@ -127,7 +128,7 @@ class MultiplyALL implements IPostDBLoadMod
                 if (experienceRewardIndex >= 0) 
                 {
                     const reward = quest.rewards.Success[experienceRewardIndex];
-                    reward.value = (parseInt(reward.value) * config.experience.questMultiplier).toString();
+                    reward.value = Math.round(parseInt(reward.value) * config.experience.questMultiplier).toString();
                     quests[Object.keys(quests)[i]].rewards.Success[experienceRewardIndex] = reward;
                     updated += 1;
                 }
@@ -144,19 +145,19 @@ class MultiplyALL implements IPostDBLoadMod
 
         if (dailies.rewardScaling?.experience?.length) 
         {
-            dailies.rewardScaling.experience = dailies.rewardScaling.experience.map((exp) => exp * config.experience.dailyWeeklyMultiplier);
+            dailies.rewardScaling.experience = dailies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
             logger.info(`[MultiplyALL-XP]: Dailies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
         }
 
         if (weeklies.rewardScaling?.experience?.length) 
         {
-            weeklies.rewardScaling.experience = weeklies.rewardScaling.experience.map((exp) => exp * config.experience.dailyWeeklyMultiplier);
+            weeklies.rewardScaling.experience = weeklies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
             logger.info(`[MultiplyALL-XP]: Weeklies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
         }
 
         if (dailiesScav.rewardScaling?.experience?.length) 
         {
-            dailiesScav.rewardScaling.experience = dailiesScav.rewardScaling.experience.map((exp) => exp * config.experience.dailyWeeklyMultiplier);
+            dailiesScav.rewardScaling.experience = dailiesScav.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
             logger.info(`[MultiplyALL-XP]: Dailies [Scav] multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
         }
     }
