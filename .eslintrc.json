@@ -19,7 +19,8 @@
     "@typescript-eslint/quotes": 1,
     "@typescript-eslint/brace-style": [
       "warn",
-      "allman"
+      "1tbs", 
+      { "allowSingleLine": true }
     ],
     "@typescript-eslint/naming-convention": [
       "warn",

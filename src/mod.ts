@@ -1,4 +1,6 @@
 import { DependencyContainer } from "tsyringe";
+import https from "https";
+
 import { IPostDBLoadMod } from "@spt-aki/models/external/IPostDBLoadMod";
 import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
 import { IDatabaseTables } from "@spt-aki/models/spt/server/IDatabaseTables";
@@ -10,15 +12,13 @@ import { ConfigServer } from "@spt-aki/servers/ConfigServer";
 import packageJson from "../package.json";
 import config from "../config.json";
 
-class MultiplyALL implements IPostDBLoadMod
-{
+class MultiplyALL implements IPostDBLoadMod {
     tables: IDatabaseTables;
     questConfig: any;
     coreConfig: any;
     lootConfig: any;
     configServer: ConfigServer;
-    public postDBLoad(container: DependencyContainer): void
-    {
+    public postDBLoad(container: DependencyContainer): void {
         this.configServer = container.resolve<ConfigServer>("ConfigServer");
         this.questConfig = this.configServer.getConfig(ConfigTypes.QUEST);
         this.coreConfig = this.configServer.getConfig(ConfigTypes.CORE)
@@ -32,41 +32,54 @@ class MultiplyALL implements IPostDBLoadMod
         this.multiplySkillProgressionRate(container);
         this.multiplyWeaponSkillProgressionRate(container);
         this.multiplyLoots(container);
+        this.updateController(container);
     }
-    multiplyLoots(container: DependencyContainer) 
-    {
+    updateController(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
-        if (config.loot.staticLootMultiplier !== 1) 
-        {
-            for (const i in this.lootConfig.staticLootMultiplier) 
-            {
+        let data = "";
+        let parsed;
+        https.get({
+            hostname: "api.github.com",
+            path: "/repos/alimoncul/spt-multiplyALL/releases",
+            method: "GET",
+            headers: { "User-Agent": "MultiplyALL Version Checker" }
+        }, (res) => {
+            res.on("data", (chunk) => { data += chunk; });
+            res.on("end", () => { try { parsed = JSON.parse(data); } catch (error) { logger.error(`[MultiplyALL-VersionChecker]: Could not check new versions, Error:${error}`); } })
+        })
+            .on("error", (e) => { logger.error(`[MultiplyALL-VersionChecker]: Could not check new versions, Error:${e}`); })
+            .on("close", () => { 
+                const latestVersionAvailable = parsed?.[0]?.tag_name;
+                if (latestVersionAvailable && latestVersionAvailable !== packageJson.version) {
+                    logger.info("[MultiplyALL-VersionChecker]: New version available, please check the mod page!");
+                }
+            });
+    }
+    multiplyLoots(container: DependencyContainer) {
+        const logger = container.resolve<ILogger>("WinstonLogger");
+        if (config.loot.staticLootMultiplier !== 1) {
+            for (const i in this.lootConfig.staticLootMultiplier) {
                 this.lootConfig.staticLootMultiplier[i] *= config.loot.staticLootMultiplier;
             }
             logger.info(`[MultiplyALL-LOOT]: StaticLoot multiplied by: ${config.loot.staticLootMultiplier}`);
         }
-        if (config.loot.looseLootMultiplier !== 1) 
-        {
-            for (const i in this.lootConfig.looseLootMultiplier) 
-            {
+        if (config.loot.looseLootMultiplier !== 1) {
+            for (const i in this.lootConfig.looseLootMultiplier) {
                 this.lootConfig.looseLootMultiplier[i] *= config.loot.looseLootMultiplier;
             }
             logger.info(`[MultiplyALL-LOOT]: LooseLoot multiplied by: ${config.loot.looseLootMultiplier}`);
         }
     }
-    multiplyWeaponSkillProgressionRate(container: DependencyContainer) 
-    {
+    multiplyWeaponSkillProgressionRate(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
-        if (config.experience.weaponSkillMultiplier !== 1) 
-        {
+        if (config.experience.weaponSkillMultiplier !== 1) {
             this.tables.globals.config.SkillsSettings.WeaponSkillProgressRate *= config.experience.weaponSkillMultiplier;
             logger.info(`[MultiplyALL-XP]: WeaponSkillProgression multiplied by: ${config.experience.weaponSkillMultiplier}`);
         }
     }
-    multiplySkillProgressionRate(container: DependencyContainer) 
-    {
+    multiplySkillProgressionRate(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
-        if (config.experience.skillMultiplier !== 1) 
-        {
+        if (config.experience.skillMultiplier !== 1) {
             this.tables.globals.config.SkillsSettings.SkillProgressRate *= config.experience.skillMultiplier;
             this.tables.globals.config.SkillMinEffectiveness = 1;
             this.tables.globals.config.SkillFatiguePerPoint = 1;
@@ -74,39 +87,31 @@ class MultiplyALL implements IPostDBLoadMod
             logger.info(`[MultiplyALL-XP]: SkillProgression multiplied by: ${config.experience.skillMultiplier}`);
         }
     }
-    packageChecker(container: DependencyContainer) 
-    {
+    packageChecker(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
         const modAKIVersion = packageJson.akiVersion;
-        if (modAKIVersion !== this.coreConfig.akiVersion) 
-        {
+        if (modAKIVersion !== this.coreConfig.akiVersion) {
             logger.info("[MultiplyALL]: You are using different AKI Version than the mod, you may experience problems. Write down this problems in support thread.");
         }
     }
-    multiplyRaidExitExperience(container: DependencyContainer) 
-    {
+    multiplyRaidExitExperience(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
-        if (config.experience.raidExitMultiplier !== 1) 
-        {
+        if (config.experience.raidExitMultiplier !== 1) {
             this.tables.globals.config.exp.match_end.survived_exp_reward = Math.round(this.tables.globals.config.exp.match_end.survived_exp_reward * config.experience.raidExitMultiplier);
             this.tables.globals.config.exp.match_end.mia_exp_reward = Math.round(this.tables.globals.config.exp.match_end.mia_exp_reward * config.experience.raidExitMultiplier);
             this.tables.globals.config.exp.match_end.runner_exp_reward = Math.round(this.tables.globals.config.exp.match_end.runner_exp_reward * config.experience.raidExitMultiplier);
             logger.info(`[MultiplyALL-XP]: RaidExitExperience multiplied by: ${config.experience.raidExitMultiplier}`);
         }
     }
-    multiplyExamineExperience(container: DependencyContainer) 
-    {
+    multiplyExamineExperience(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
         const items = this.tables.templates.items;
         let updated = 0;
-        if (config.experience.examineMultiplier !== 1) 
-        {
-            for (let i = 0; i < Object.keys(items).length; i+=1) 
-            {
+        if (config.experience.examineMultiplier !== 1) {
+            for (let i = 0; i < Object.keys(items).length; i+=1) {
                 const item = items[Object.keys(items)[i]];
                 const examineExperience = item?._props?.ExamineExperience;
-                if (examineExperience >= 0) 
-                {
+                if (examineExperience >= 0) {
                     items[Object.keys(items)[i]]._props.ExamineExperience = Math.round(examineExperience * config.experience.examineMultiplier);
                     updated +=1;
                 }
@@ -114,19 +119,15 @@ class MultiplyALL implements IPostDBLoadMod
             logger.info(`[MultiplyALL-XP]: ExamineExperience multiplied by: ${config.experience.examineMultiplier}, Total Items Updated: ${updated}`);
         }
     }
-    multiplyQuests(container: DependencyContainer) 
-    {
+    multiplyQuests(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
         const quests = this.tables.templates.quests;
         let updated = 0;
-        if (config.experience.questMultiplier !== 1) 
-        {
-            for (let i = 0; i < Object.keys(quests).length; i+=1) 
-            {
+        if (config.experience.questMultiplier !== 1) {
+            for (let i = 0; i < Object.keys(quests).length; i+=1) {
                 const quest = quests[Object.keys(quests)[i]];
                 const experienceRewardIndex = quest?.rewards?.Success?.findIndex?.((s) => s.type === "Experience");
-                if (experienceRewardIndex >= 0) 
-                {
+                if (experienceRewardIndex >= 0) {
                     const reward = quest.rewards.Success[experienceRewardIndex];
                     reward.value = Math.round(parseInt(reward.value) * config.experience.questMultiplier).toString();
                     quests[Object.keys(quests)[i]].rewards.Success[experienceRewardIndex] = reward;
@@ -136,29 +137,61 @@ class MultiplyALL implements IPostDBLoadMod
             logger.info(`[MultiplyALL-XP]: Quests multiplied by: ${config.experience.questMultiplier}, Total Quests Updated: ${updated}`);
         }
     }
-    multiplyDailiesAndWeeklies(container: DependencyContainer) 
-    { 
+    multiplyDailiesAndWeeklies(container: DependencyContainer) { 
         const logger = container.resolve<ILogger>("WinstonLogger");
         const dailies = this.questConfig.repeatableQuests[0];
         const weeklies = this.questConfig.repeatableQuests[1];
         const dailiesScav = this.questConfig.repeatableQuests[2];
 
-        if (dailies.rewardScaling?.experience?.length) 
-        {
-            dailies.rewardScaling.experience = dailies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
-            logger.info(`[MultiplyALL-XP]: Dailies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+        if (config.experience.dailyWeeklyMultiplier !== 1) {
+            if (dailies.rewardScaling?.experience?.length) {
+                dailies.rewardScaling.experience = dailies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-XP]: Dailies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+            }
+    
+            if (weeklies.rewardScaling?.experience?.length) {
+                weeklies.rewardScaling.experience = weeklies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-XP]: Weeklies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+            }
+    
+            if (dailiesScav.rewardScaling?.experience?.length) {
+                dailiesScav.rewardScaling.experience = dailiesScav.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-XP]: Dailies [Scav] multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+            }
         }
 
-        if (weeklies.rewardScaling?.experience?.length) 
-        {
-            weeklies.rewardScaling.experience = weeklies.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
-            logger.info(`[MultiplyALL-XP]: Weeklies multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+        if (config.money.dailyWeeklyMultiplier !== 1) {
+            if (dailies.rewardScaling?.roubles?.length) {
+                dailies.rewardScaling.roubles = dailies.rewardScaling.roubles.map((exp) => Math.round(exp * config.money.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-ROUBLES]: Dailies multiplied by: ${config.money.dailyWeeklyMultiplier}`);
+            }
+    
+            if (weeklies.rewardScaling?.roubles?.length) {
+                weeklies.rewardScaling.roubles = weeklies.rewardScaling.roubles.map((exp) => Math.round(exp * config.money.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-ROUBLES]: Weeklies multiplied by: ${config.money.dailyWeeklyMultiplier}`);
+            }
+    
+            if (dailiesScav.rewardScaling?.roubles?.length) {
+                dailiesScav.rewardScaling.roubles = dailiesScav.rewardScaling.roubles.map((exp) => Math.round(exp * config.money.dailyWeeklyMultiplier));
+                logger.info(`[MultiplyALL-ROUBLES]: Dailies [Scav] multiplied by: ${config.money.dailyWeeklyMultiplier}`);
+            }
         }
 
-        if (dailiesScav.rewardScaling?.experience?.length) 
-        {
-            dailiesScav.rewardScaling.experience = dailiesScav.rewardScaling.experience.map((exp) => Math.round(exp * config.experience.dailyWeeklyMultiplier));
-            logger.info(`[MultiplyALL-XP]: Dailies [Scav] multiplied by: ${config.experience.dailyWeeklyMultiplier}`);
+        if (config.reputation.dailyWeeklyMultiplier !== 1) {
+            if (dailies.rewardScaling?.reputation?.length) {
+                dailies.rewardScaling.reputation = dailies.rewardScaling.reputation.map((exp) => exp * config.reputation.dailyWeeklyMultiplier);
+                logger.info(`[MultiplyALL-REPUTATION]: Dailies multiplied by: ${config.reputation.dailyWeeklyMultiplier}`);
+            }
+    
+            if (weeklies.rewardScaling?.reputation?.length) {
+                weeklies.rewardScaling.reputation = weeklies.rewardScaling.reputation.map((exp) => exp * config.reputation.dailyWeeklyMultiplier);
+                logger.info(`[MultiplyALL-REPUTATION]: Weeklies multiplied by: ${config.reputation.dailyWeeklyMultiplier}`);
+            }
+    
+            if (dailiesScav.rewardScaling?.reputation?.length) {
+                dailiesScav.rewardScaling.reputation = dailiesScav.rewardScaling.reputation.map((exp) => exp * config.reputation.dailyWeeklyMultiplier);
+                logger.info(`[MultiplyALL-REPUTATION]: Dailies [Scav] multiplied by: ${config.reputation.dailyWeeklyMultiplier}`);
+            }
         }
     }
 }
