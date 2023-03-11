@@ -4,12 +4,15 @@ This mod dynamically multiplies the values listed in config and doesn't change a
 
 Features:
 - Daily & Weekly & Daily(Scav) Experience Multiplier
+- Daily & Weekly & Daily(Scav) Money Multiplier [Disabled by default]
+- Daily & Weekly & Daily(Scav) Reputation Multiplier [Disabled by default]
 - Quest Experience Multiplier
 - Item Examination Experience Multiplier
 - Raid Exit Experience Multiplier
 - Skill Progression Multiplier
 - Weapon Skill Progression Multiplier
 - Static & Loose Loot Multiplier
+- Flea Market Offer Count Multiplier
 
 Configs:
 Open up MOD_FOLDER/config.json and you will see the values and descriptions. Don't go too much of course I don't know the limit but if you want to disable an option just write down 1 for the value. If the value is 1 it doesn't change anything for that part.

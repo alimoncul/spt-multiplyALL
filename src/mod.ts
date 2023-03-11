@@ -33,6 +33,7 @@ class MultiplyALL implements IPostDBLoadMod {
         this.multiplyWeaponSkillProgressionRate(container);
         this.multiplyLoots(container);
         this.updateController(container);
+        this.multiplyFleaOfferCount(container);
     }
     updateController(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
@@ -54,6 +55,19 @@ class MultiplyALL implements IPostDBLoadMod {
                     logger.info("[MultiplyALL-VersionChecker]: New version available, please check the mod page!");
                 }
             });
+    }
+    multiplyFleaOfferCount(container: DependencyContainer) {
+        const logger = container.resolve<ILogger>("WinstonLogger");
+        if (config.flea.offerCountMultiplier !== 1) { 
+            if (config.flea.offerCountMultiplier % 1 !== 0) {
+                logger.error("[MultiplyALL-FLEA]: offerCountMultiplier set as a float, it is not supported please set it as integer. Example values: 2, 4, 5, 10");
+            } else {
+                for (let i = 0; i < this.tables.globals.config.RagFair.maxActiveOfferCount.length; i+=1 ) {
+                    this.tables.globals.config.RagFair.maxActiveOfferCount[i].count *= config.flea.offerCountMultiplier;
+                }
+                logger.info(`[MultiplyALL-FLEA]: MaxActiveOfferCount multiplied by: ${config.flea.offerCountMultiplier}`);
+            }
+        }
     }
     multiplyLoots(container: DependencyContainer) {
         const logger = container.resolve<ILogger>("WinstonLogger");
