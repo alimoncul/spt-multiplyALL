@@ -44,6 +44,8 @@ class MultiplyALL implements IPostDBLoadMod {
         this.multiplyLoots();
         this.multiplyFleaOfferCount();
         this.multiplyFenceReputation();
+        this.multiplyStamina();
+        this.multiplyMagazineSpeeds();
         this.updateController();
     }
     updateController() {
@@ -65,6 +67,22 @@ class MultiplyALL implements IPostDBLoadMod {
                     this.logger.warning("[MultiplyALL-VersionChecker]: New version available, please check the mod page!");
                 }
             });
+    }
+    multiplyMagazineSpeeds() {
+        if (config.ammo.magazineLoadSpeedMultiplier !== 1) {
+            this.tables.globals.config.BaseLoadTime /= config.ammo.magazineLoadSpeedMultiplier;
+            this.logger.info(`[MultiplyALL-AMMO]: Magazine load time multiplied by: ${config.ammo.magazineLoadSpeedMultiplier}`);
+        }
+        if (config.ammo.magazineUnloadSpeedMultiplier !== 1) {
+            this.tables.globals.config.BaseUnloadTime /= config.ammo.magazineUnloadSpeedMultiplier;
+            this.logger.info(`[MultiplyALL-AMMO]: Magazine unload time multiplied by: ${config.ammo.magazineUnloadSpeedMultiplier}`);
+        }
+    }
+    multiplyStamina() {
+        if (config.stamina.capacityMultiplier !== 1) {
+            this.tables.globals.config.Stamina.Capacity = Math.round(this.tables.globals.config.Stamina.Capacity * config.stamina.capacityMultiplier);
+            this.logger.info(`[MultiplyALL-STAMINA]: Capacity multiplied by: ${config.stamina.capacityMultiplier} | New Capacity: ${this.tables.globals.config.Stamina.Capacity}`);
+        }
     }
     multiplyFenceReputation() {
         if (config.reputation.carExtractMultiplier !== 1) {

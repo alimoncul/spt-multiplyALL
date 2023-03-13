@@ -28,12 +28,22 @@
         "=== Multiplies the reputation gain of the daily & weekly tasks ===": "< Description",
         "dailyWeeklyMultiplier": 1,
         "=== Multiplies the reputation gain for fence in car extracts ===": "< Description",
-        "carExtractMultiplier": 2,
+        "carExtractMultiplier": 1,
         "=== Multiplies the reputation gain when extracting as a scav ===": "< Description",
-        "scavExtractMultiplier": 2
+        "scavExtractMultiplier": 1
     },
     "flea": {
         "=== Multiplies the offer count the user can put in flea market ===": "< Description",
         "offerCountMultiplier": 2
+    },
+    "stamina": {
+        "=== Multiplies the stamina capacity ===": "< Description",
+        "capacityMultiplier": 1
+    },
+    "ammo": {
+        "=== Multiplies speed of magazine loading ===": "< Description",
+        "magazineLoadSpeedMultiplier": 1,
+        "=== Multiplies speed of magazine unloading ===": "< Description",
+        "magazineUnloadSpeedMultiplier": 1
     }
 }
