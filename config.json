@@ -26,7 +26,11 @@
     },
     "reputation": {
         "=== Multiplies the reputation gain of the daily & weekly tasks ===": "< Description",
-        "dailyWeeklyMultiplier": 1
+        "dailyWeeklyMultiplier": 1,
+        "=== Multiplies the reputation gain for fence in car extracts ===": "< Description",
+        "carExtractMultiplier": 2,
+        "=== Multiplies the reputation gain when extracting as a scav ===": "< Description",
+        "scavExtractMultiplier": 2
     },
     "flea": {
         "=== Multiplies the offer count the user can put in flea market ===": "< Description",
