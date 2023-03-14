@@ -1,10 +1,10 @@
 {
     "name": "MultiplyALL",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "main": "src/mod.js",
     "license": "MIT",
     "author": "Alim Oncul",
-    "akiVersion": "3.5.2",
+    "akiVersion": "3.5.3",
     "engines": {
         "node": "16.17.1"
     },
