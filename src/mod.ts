@@ -37,7 +37,7 @@ class MultiplyALL implements IPostDBLoadMod {
         this.tables = container.resolve<DatabaseServer>("DatabaseServer").getTables();
         this.multiplyDailiesAndWeeklies();
         this.multiplyQuests();
-        this.multiplyExamineExperience();
+        this.multiplyItemValues();
         this.multiplyRaidExitExperience();
         this.multiplySkillProgressionRate();
         this.multiplyWeaponSkillProgressionRate();
@@ -143,19 +143,38 @@ class MultiplyALL implements IPostDBLoadMod {
             this.logger.info(`[MultiplyALL-XP]: RaidExitExperience multiplied by: ${config.experience.raidExitMultiplier}`);
         }
     }
-    multiplyExamineExperience() {
+    multiplyItemValues() {
         const items = this.tables.templates.items;
-        let updated = 0;
-        if (config.experience.examineMultiplier !== 1) {
+        let examineExperienceUpdated = 0;
+        let armorDurabilityUpdated = 0;
+        const examineMultiplierEdited = config.experience.examineMultiplier !== 1;
+        const armorMultiplierEdited = config.durability.armorMultiplier !== 1;
+        if (examineMultiplierEdited || armorMultiplierEdited) {
             for (let i = 0; i < Object.keys(items).length; i+=1) {
                 const item = items[Object.keys(items)[i]];
-                const examineExperience = item?._props?.ExamineExperience;
-                if (examineExperience >= 0) {
-                    items[Object.keys(items)[i]]._props.ExamineExperience = Math.round(examineExperience * config.experience.examineMultiplier);
-                    updated +=1;
+                if (examineMultiplierEdited) {
+                    const examineExperience = item?._props?.ExamineExperience;
+                    if (examineExperience >= 0) {
+                        items[Object.keys(items)[i]]._props.ExamineExperience = Math.round(examineExperience * config.experience.examineMultiplier);
+                        examineExperienceUpdated +=1;
+                    }
+                }
+                if (armorMultiplierEdited) {
+                    const isItemHasAProtection = item?._props?.armorZone?.length;
+                    if (isItemHasAProtection) {
+                        const stockDurability = item._props.Durability;
+                        items[Object.keys(items)[i]]._props.Durability = Math.round(stockDurability * config.durability.armorMultiplier);
+                        items[Object.keys(items)[i]]._props.MaxDurability = items[Object.keys(items)[i]]._props.Durability;
+                        armorDurabilityUpdated += 1;
+                    }
                 }
             }
-            this.logger.info(`[MultiplyALL-XP]: ExamineExperience multiplied by: ${config.experience.examineMultiplier}, Total Items Updated: ${updated}`);
+            if (examineExperienceUpdated > 0) {
+                this.logger.info(`[MultiplyALL-XP]: ExamineExperience multiplied by: ${config.experience.examineMultiplier}, Total Items Updated: ${examineExperienceUpdated}`);
+            }
+            if (armorDurabilityUpdated > 0) {
+                this.logger.info(`[MultiplyALL-DURABILITY]: Armor durabilities multiplied by: ${config.durability.armorMultiplier}, Total Items Updated: ${armorDurabilityUpdated}`);
+            }
         }
     }
     multiplyQuests() {

@@ -45,5 +45,9 @@
         "magazineLoadSpeedMultiplier": 1,
         "=== Multiplies speed of magazine unloading ===": "< Description",
         "magazineUnloadSpeedMultiplier": 1
+    },
+    "durability": {
+        "=== Multiplies durability of all armors & helmets & shields ===": "< Description",
+        "armorMultiplier": 1
     }
 }
