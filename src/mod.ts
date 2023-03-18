@@ -46,6 +46,7 @@ class MultiplyALL implements IPostDBLoadMod {
         this.multiplyFenceReputation();
         this.multiplyStamina();
         this.multiplyMagazineSpeeds();
+        this.multiplyHideout();
         this.updateController();
     }
     updateController() {
@@ -67,6 +68,33 @@ class MultiplyALL implements IPostDBLoadMod {
                     this.logger.warning("[MultiplyALL-VersionChecker]: New version available, please check the mod page!");
                 }
             });
+    }
+    multiplyHideout() {
+        if (config.hideout.stashMultiplier !== 1) {
+            // 566abbc34bdc2d92178b4576 Standard stash 10x28
+            // 5811ce572459770cba1a34ea Left Behind stash 10x38
+            // 5811ce662459770f6f490f32 Prepare for escape stash 10x48
+            // 5811ce772459770e9e5f9532 Edge of darkness stash 10x68
+            try {
+                this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
+                this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
+                this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
+                this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
+                this.logger.info(`[MultiplyALL-HIDEOUT]: Stash size multiplied by ${config.hideout.stashMultiplier}, New sizes: Standard stash(10x${this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV}) Left Behind stash(10x${this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV}) Prepare for escape stash(10x${this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV}) Edge of darkness stash(10x${this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV})`);
+            } catch (error) {
+                this.logger.error(`[MultiplyALL-HIDEOUT]: Error occurred while multiplying stash, Error: ${error}`);
+            }
+        }
+        if (config.hideout.productionSpeedMultiplier !== 1) {
+            for (let i = 0; i < this.tables.hideout.production.length; i+=1) {
+                this.tables.hideout.production[i].productionTime = Math.round(this.tables.hideout.production[i].productionTime / config.hideout.productionSpeedMultiplier);
+            }
+            this.logger.info(`[MultiplyALL-HIDEOUT]: Production speed multiplied by ${config.hideout.productionSpeedMultiplier}`);
+        }
+        if (config.hideout.fuelUsageMultiplier !== 1) {
+            this.tables.hideout.settings.generatorFuelFlowRate = Math.round(this.tables.hideout.settings.generatorFuelFlowRate * config.hideout.fuelUsageMultiplier);
+            this.logger.info(`[MultiplyALL-HIDEOUT]: Fuel flow rate multiplied by ${config.hideout.fuelUsageMultiplier}`);
+        }
     }
     multiplyMagazineSpeeds() {
         if (config.ammo.magazineLoadSpeedMultiplier !== 1) {

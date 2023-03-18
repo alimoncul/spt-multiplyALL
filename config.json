@@ -49,5 +49,14 @@
     "durability": {
         "=== Multiplies durability of all armors & helmets & shields ===": "< Description",
         "armorMultiplier": 1
+    },
+    "hideout": {
+        "=== Multiplies the stash sizes of each level (Defaults are: 10x28, 10x38, 10x48, 10x68) ===": "< Description",
+        "=== DO NOT LOWER THIS VALUE (stashMultiplier) IF YOU HAVE ITEMS IN THE MULTIPLIED PART OF THE STASH ===": "< WARNING",
+        "stashMultiplier": 1.4,
+        "=== Multiplies the production speed of each craft ===": "< Description",
+        "productionSpeedMultiplier": 10,
+        "=== Multiplies the fuel usage rate to compensate faster crafts ===": "< Description",
+        "fuelUsageMultiplier": 10
     }
 }
