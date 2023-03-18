@@ -93,7 +93,7 @@ class MultiplyALL implements IPostDBLoadMod {
             this.logger.info(`[MultiplyALL-HIDEOUT]: Production speed multiplied by ${config.hideout.productionSpeedMultiplier}`);
         }
         if (config.hideout.fuelUsageMultiplier !== 1) {
-            this.tables.hideout.settings.generatorFuelFlowRate = Math.round(this.tables.hideout.settings.generatorFuelFlowRate * config.hideout.fuelUsageMultiplier);
+            this.tables.hideout.settings.generatorFuelFlowRate = this.tables.hideout.settings.generatorFuelFlowRate * config.hideout.fuelUsageMultiplier;
             this.logger.info(`[MultiplyALL-HIDEOUT]: Fuel flow rate multiplied by ${config.hideout.fuelUsageMultiplier}`);
         }
     }
