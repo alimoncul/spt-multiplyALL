@@ -47,6 +47,7 @@ class MultiplyALL implements IPostDBLoadMod {
         this.multiplyStamina();
         this.multiplyMagazineSpeeds();
         this.multiplyHideout();
+        this.multiplyKills();
         this.updateController();
     }
     updateController() {
@@ -169,6 +170,15 @@ class MultiplyALL implements IPostDBLoadMod {
             this.tables.globals.config.exp.match_end.mia_exp_reward = Math.round(this.tables.globals.config.exp.match_end.mia_exp_reward * config.experience.raidExitMultiplier);
             this.tables.globals.config.exp.match_end.runner_exp_reward = Math.round(this.tables.globals.config.exp.match_end.runner_exp_reward * config.experience.raidExitMultiplier);
             this.logger.info(`[MultiplyALL-XP]: RaidExitExperience multiplied by: ${config.experience.raidExitMultiplier}`);
+        }
+    }
+    multiplyKills() {
+        if (config.experience.killMultiplier !== 1) {
+            this.tables.globals.config.exp.kill.victimLevelExp = Math.round(this.tables.globals.config.exp.kill.victimLevelExp * config.experience.killMultiplier);
+            this.tables.globals.config.exp.kill.expOnDamageAllHealth = Math.round(this.tables.globals.config.exp.kill.expOnDamageAllHealth * config.experience.killMultiplier);
+            this.tables.globals.config.exp.kill.longShotDistance = Math.round(this.tables.globals.config.exp.kill.longShotDistance * config.experience.killMultiplier);
+            this.tables.globals.config.exp.kill.victimBotLevelExp = Math.round(this.tables.globals.config.exp.kill.victimBotLevelExp * config.experience.killMultiplier);
+            this.logger.info(`[MultiplyALL-XP]: KillExperience multiplied by: ${config.experience.killMultiplier}`);
         }
     }
     multiplyItemValues() {

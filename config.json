@@ -12,7 +12,9 @@
         "=== Multiplies the skill progression rate ===": "< Description",
         "skillMultiplier": 2,
         "=== Multiplies the weapon skill progression rate ===": "< Description",
-        "weaponSkillMultiplier": 2
+        "weaponSkillMultiplier": 2,
+        "=== Multiplies the experience of the kills ===": "< Description",
+        "killMultiplier": 2
     },
     "loot": {
         "=== Multiplies the static loot rate ===": "< Description",
