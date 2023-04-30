@@ -232,9 +232,11 @@ class MultiplyALL implements IPostDBLoadMod {
                 }
                 if (reputationRewardIndex && config.reputation.questMultiplier !== 1) {
                     const reputation = quest.rewards.Success[reputationRewardIndex];
-                    reputation.value = (parseFloat(reputation.value) * config.reputation.questMultiplier).toString();
-                    quests[Object.keys(quests)[i]].rewards.Success[reputationRewardIndex] = reputation;
-                    updatedQuestReputation += 1;
+                    if (reputation?.value) {
+                        reputation.value = (parseFloat(reputation.value) * config.reputation.questMultiplier).toString();
+                        quests[Object.keys(quests)[i]].rewards.Success[reputationRewardIndex] = reputation;
+                        updatedQuestReputation += 1;
+                    }
                 }
             }
             this.logger.info(`[MultiplyALL-XP]: Quests experience multiplied by: ${config.experience.questMultiplier}, Total Quests Updated: ${updatedQuestExperience}`);
