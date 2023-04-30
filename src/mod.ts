@@ -217,19 +217,28 @@ class MultiplyALL implements IPostDBLoadMod {
     }
     multiplyQuests() {
         const quests = this.tables.templates.quests;
-        let updated = 0;
-        if (config.experience.questMultiplier !== 1) {
+        let updatedQuestExperience = 0;
+        let updatedQuestReputation = 0;
+        if (config.experience.questMultiplier !== 1 || config.reputation.questMultiplier !== 1) {
             for (let i = 0; i < Object.keys(quests).length; i+=1) {
                 const quest = quests[Object.keys(quests)[i]];
                 const experienceRewardIndex = quest?.rewards?.Success?.findIndex?.((s) => s.type === "Experience");
-                if (experienceRewardIndex >= 0) {
+                const reputationRewardIndex = quest?.rewards?.Success?.findIndex?.((s) => s.type === "TraderStanding");
+                if (experienceRewardIndex >= 0 && config.experience.questMultiplier !== 1) {
                     const reward = quest.rewards.Success[experienceRewardIndex];
                     reward.value = Math.round(parseInt(reward.value) * config.experience.questMultiplier).toString();
                     quests[Object.keys(quests)[i]].rewards.Success[experienceRewardIndex] = reward;
-                    updated += 1;
+                    updatedQuestExperience += 1;
+                }
+                if (reputationRewardIndex && config.reputation.questMultiplier !== 1) {
+                    const reputation = quest.rewards.Success[reputationRewardIndex];
+                    reputation.value = (parseFloat(reputation.value) * config.reputation.questMultiplier).toString();
+                    quests[Object.keys(quests)[i]].rewards.Success[reputationRewardIndex] = reputation;
+                    updatedQuestReputation += 1;
                 }
             }
-            this.logger.info(`[MultiplyALL-XP]: Quests multiplied by: ${config.experience.questMultiplier}, Total Quests Updated: ${updated}`);
+            this.logger.info(`[MultiplyALL-XP]: Quests experience multiplied by: ${config.experience.questMultiplier}, Total Quests Updated: ${updatedQuestExperience}`);
+            this.logger.info(`[MultiplyALL-XP]: Quests reputation multiplied by: ${config.reputation.questMultiplier}, Total Quests Updated: ${updatedQuestReputation}`);
         }
     }
     multiplyDailiesAndWeeklies() { 
