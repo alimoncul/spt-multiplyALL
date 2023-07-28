@@ -1,3 +1,4 @@
+import { MinMaxWithWhitelist } from "../../../models/eft/common/tables/IBotType";
 import { MinMax } from "../../common/MinMax";
 import { IBaseConfig } from "./IBaseConfig";
 import { IBotDurability } from "./IBotDurability";
@@ -25,11 +26,13 @@ export interface IBotConfig extends IBaseConfig {
     showTypeInNickname: boolean;
     /** Max number of bots that can be spawned in a raid at any one time */
     maxBotCap: Record<string, number>;
+    chanceAssaultScavHasPlayerScavName: number;
     /** How many stacks of secret ammo should a bot have in its bot secure container */
     secureContainerAmmoStackCount: number;
     /** Batch generation size when type not available in cache */
     botGenerationBatchSizePerType: number;
 }
+/** Number of bots to generate and store in cache on raid start per bot type */
 export interface PresetBatch {
     assault: number;
     bossBully: number;
@@ -65,15 +68,24 @@ export interface LootNvalue {
     pmc: number;
 }
 export interface EquipmentFilters {
+    /** Limits for mod types per weapon .e.g. scopes */
     weaponModLimits: ModLimits;
+    /** Whitelsit for weapons allowed per gun */
     weaponSightWhitelist: Record<string, string[]>;
     faceShieldIsActiveChancePercent?: number;
-    lightLaserIsActiveChancePercent?: number;
-    nvgIsActiveChancePercent?: number;
+    lightIsActiveDayChancePercent?: number;
+    lightIsActiveNightChancePercent?: number;
+    laserIsActiveChancePercent?: number;
+    nvgIsActiveChanceDayPercent?: number;
+    nvgIsActiveChanceNightPercent?: number;
+    /** Adjust weighting/chances of items on bot by level of bot */
     randomisation: RandomisationDetails[];
+    /** Blacklist equipment by level of bot */
     blacklist: EquipmentFilterDetails[];
+    /** Whitelist equipment by level of bot */
     whitelist: EquipmentFilterDetails[];
     clothing: WeightingAdjustmentDetails[];
+    /** Adjust clothing choice weighting by level of bot */
     weightingAdjustments: WeightingAdjustmentDetails[];
 }
 export interface ModLimits {
@@ -83,23 +95,34 @@ export interface ModLimits {
     lightLaserLimit?: number;
 }
 export interface RandomisationDetails {
+    /** Between what levels do these randomisation setting apply to */
     levelRange: MinMax;
+    generation?: Record<string, MinMaxWithWhitelist>;
+    /** Mod slots that should be fully randomisate -ignores mods from bottype.json */
     randomisedWeaponModSlots?: string[];
+    /** Armor slots that should be randomised e.g. 'Headwear, Armband' */
     randomisedArmorSlots?: string[];
     /** Equipment chances */
     equipment?: Record<string, number>;
-    /** Modc chances */
+    /** Mod chances */
     mods?: Record<string, number>;
 }
 export interface EquipmentFilterDetails {
+    /** Between what levels do these equipment filter setting apply to */
     levelRange: MinMax;
+    /** Key: mod slot name e.g. mod_magazine, value: item tpls */
     equipment: Record<string, string[]>;
+    /** Key: cartridge type e.g. Caliber23x75, value: item tpls */
     cartridge: Record<string, string[]>;
 }
 export interface WeightingAdjustmentDetails {
+    /** Between what levels do these weight settings apply to */
     levelRange: MinMax;
+    /** Key: ammo type e.g. Caliber556x45NATO, value: item tpl + weight */
     ammo?: AdjustmentDetails;
+    /** Key: equipment slot e.g. TacticalVest, value: item tpl + weight */
     equipment?: AdjustmentDetails;
+    /** Key: clothing slor e.g. feet, value: item tpl + weight */
     clothing?: AdjustmentDetails;
 }
 export interface AdjustmentDetails {

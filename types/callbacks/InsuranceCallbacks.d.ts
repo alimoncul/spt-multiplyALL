@@ -10,7 +10,7 @@ import { IInsuranceConfig } from "../models/spt/config/IInsuranceConfig";
 import { ConfigServer } from "../servers/ConfigServer";
 import { InsuranceService } from "../services/InsuranceService";
 import { HttpResponseUtil } from "../utils/HttpResponseUtil";
-export declare class InsuranceCallbacks extends OnUpdate {
+export declare class InsuranceCallbacks implements OnUpdate {
     protected insuranceController: InsuranceController;
     protected insuranceService: InsuranceService;
     protected httpResponse: HttpResponseUtil;
@@ -23,7 +23,7 @@ export declare class InsuranceCallbacks extends OnUpdate {
      */
     getInsuranceCost(url: string, info: IGetInsuranceCostRequestData, sessionID: string): IGetBodyResponseData<IGetInsuranceCostResponseData>;
     /**
-     * Handle Insure
+     * Handle Insure event
      * @returns IItemEventRouterResponse
      */
     insure(pmcData: IPmcData, body: IInsureRequestData, sessionID: string): IItemEventRouterResponse;

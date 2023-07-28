@@ -226,14 +226,14 @@ class MultiplyALL implements IPostDBLoadMod {
                 const reputationRewardIndex = quest?.rewards?.Success?.findIndex?.((s) => s.type === "TraderStanding");
                 if (experienceRewardIndex >= 0 && config.experience.questMultiplier !== 1) {
                     const reward = quest.rewards.Success[experienceRewardIndex];
-                    reward.value = Math.round(parseInt(reward.value) * config.experience.questMultiplier).toString();
+                    reward.value = Math.round(parseInt(reward.value.toString()) * config.experience.questMultiplier).toString();
                     quests[Object.keys(quests)[i]].rewards.Success[experienceRewardIndex] = reward;
                     updatedQuestExperience += 1;
                 }
                 if (reputationRewardIndex && config.reputation.questMultiplier !== 1) {
                     const reputation = quest.rewards.Success[reputationRewardIndex];
                     if (reputation?.value) {
-                        reputation.value = (parseFloat(reputation.value) * config.reputation.questMultiplier).toString();
+                        reputation.value = (parseFloat(reputation.value.toString()) * config.reputation.questMultiplier).toString();
                         quests[Object.keys(quests)[i]].rewards.Success[reputationRewardIndex] = reputation;
                         updatedQuestReputation += 1;
                     }

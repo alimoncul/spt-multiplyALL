@@ -110,6 +110,7 @@ export declare class RandomUtil {
     getIntEx(max: number): number;
     getFloat(min: number, max: number): number;
     getBool(): boolean;
+    getPercentOfValue(percent: number, number: number, toFixed?: number): number;
     /**
      * Check if number passes a check out of 100
      * @param chancePercent value check needs to be above
@@ -142,7 +143,7 @@ export declare class RandomUtil {
      * Drawing can be with or without replacement
      * @param   {array}     list            The array we want to draw randomly from
      * @param   {integer}   count               The number of times we want to draw
-     * @param   {boolean}   replacement     Draw with or without replacement from the input array
+     * @param   {boolean}   replacement     Draw with or without replacement from the input array(defult true)
      * @return  {array}                     Array consisting of N random elements
      */
     drawRandomFromList<T>(list: Array<T>, count?: number, replacement?: boolean): Array<T>;
