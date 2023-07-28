@@ -1,15 +1,38 @@
+import { MinMax } from "../../../models/common/MinMax";
+import { SeasonalEventType } from "../../../models/enums/SeasonalEventType";
 import { ELocationName } from "../../enums/ELocationName";
 import { IBaseConfig } from "./IBaseConfig";
 export interface IQuestConfig extends IBaseConfig {
     kind: "aki-quest";
     redeemTime: number;
+    questTemplateIds: IPlayerTypeQuestIds;
+    /** Show non-seasonal quests be shown to player */
+    showNonSeasonalEventQuests: boolean;
+    eventQuests: Record<string, IEventQuestData>;
     repeatableQuests: IRepeatableQuestConfig[];
     locationIdMap: Record<string, string>;
     bearOnlyQuests: string[];
     usecOnlyQuests: string[];
 }
+export interface IPlayerTypeQuestIds {
+    pmc: IQuestTypeIds;
+    scav: IQuestTypeIds;
+}
+export interface IQuestTypeIds {
+    Elimination: string;
+    Completion: string;
+    Exploration: string;
+}
+export interface IEventQuestData {
+    name: string;
+    season: SeasonalEventType;
+    startTimestamp: number;
+    endTimestamp: number;
+    yearly: boolean;
+}
 export interface IRepeatableQuestConfig {
     name: string;
+    side: string;
     types: string[];
     resetTime: number;
     numQuests: number;
@@ -17,11 +40,12 @@ export interface IRepeatableQuestConfig {
     rewardScaling: IRewardScaling;
     locations: Record<ELocationName, string[]>;
     traderWhitelist: ITraderWhitelist[];
-    questConfig: IQuestConfig;
+    questConfig: IRepeatableQuestTypesConfig;
     /** Item base types to block when generating rewards */
     rewardBaseTypeBlacklist: string[];
     /** Item tplIds to ignore when generating rewards */
     rewardBlacklist: string[];
+    rewardAmmoStackMinSize: number;
 }
 export interface IRewardScaling {
     levels: number[];
@@ -35,10 +59,10 @@ export interface ITraderWhitelist {
     traderId: string;
     questTypes: string[];
 }
-export interface IQuestConfig {
+export interface IRepeatableQuestTypesConfig {
     Exploration: IExploration;
     Completion: ICompletion;
-    Elimination: IElimination;
+    Elimination: IEliminationConfig[];
 }
 export interface IExploration {
     maxExtracts: number;
@@ -56,7 +80,8 @@ export interface ICompletion {
     useWhitelist: boolean;
     useBlacklist: boolean;
 }
-export interface IElimination {
+export interface IEliminationConfig {
+    levelRange: MinMax;
     targets: ITarget[];
     bodyPartProb: number;
     bodyParts: IBodyPart[];
@@ -68,11 +93,6 @@ export interface IElimination {
     maxKills: number;
     minKills: number;
 }
-export interface IProbabilityObject {
-    key: string;
-    relativeProbability: number;
-    data?: any;
-}
 export interface ITarget extends IProbabilityObject {
     data: IBossInfo;
 }
@@ -81,4 +101,9 @@ export interface IBossInfo {
 }
 export interface IBodyPart extends IProbabilityObject {
     data: string[];
+}
+export interface IProbabilityObject {
+    key: string;
+    relativeProbability: number;
+    data?: any;
 }

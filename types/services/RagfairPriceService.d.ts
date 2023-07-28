@@ -1,7 +1,9 @@
+import { OnLoad } from "../di/OnLoad";
 import { HandbookHelper } from "../helpers/HandbookHelper";
 import { ItemHelper } from "../helpers/ItemHelper";
 import { PresetHelper } from "../helpers/PresetHelper";
-import { Preset } from "../models/eft/common/IGlobals";
+import { TraderHelper } from "../helpers/TraderHelper";
+import { IPreset } from "../models/eft/common/IGlobals";
 import { Item } from "../models/eft/common/tables/IItem";
 import { IBarterScheme } from "../models/eft/common/tables/ITrader";
 import { IRagfairConfig } from "../models/spt/config/IRagfairConfig";
@@ -10,7 +12,7 @@ import { ILogger } from "../models/spt/utils/ILogger";
 import { ConfigServer } from "../servers/ConfigServer";
 import { DatabaseServer } from "../servers/DatabaseServer";
 import { RandomUtil } from "../utils/RandomUtil";
-import { OnLoad } from "../di/OnLoad";
+import { LocalisationService } from "./LocalisationService";
 /**
  * Stores flea prices for items as well as methods to interact with them
  */
@@ -20,17 +22,23 @@ export declare class RagfairPriceService implements OnLoad {
     protected logger: ILogger;
     protected itemHelper: ItemHelper;
     protected presetHelper: PresetHelper;
+    protected traderHelper: TraderHelper;
     protected randomUtil: RandomUtil;
+    protected localisationService: LocalisationService;
     protected configServer: ConfigServer;
     protected ragfairConfig: IRagfairConfig;
     protected generatedDynamicPrices: boolean;
     protected generatedStaticPrices: boolean;
     protected prices: IRagfairServerPrices;
-    constructor(handbookHelper: HandbookHelper, databaseServer: DatabaseServer, logger: ILogger, itemHelper: ItemHelper, presetHelper: PresetHelper, randomUtil: RandomUtil, configServer: ConfigServer);
+    constructor(handbookHelper: HandbookHelper, databaseServer: DatabaseServer, logger: ILogger, itemHelper: ItemHelper, presetHelper: PresetHelper, traderHelper: TraderHelper, randomUtil: RandomUtil, localisationService: LocalisationService, configServer: ConfigServer);
     /**
      * Generate static (handbook) and dynamic (prices.json) flea prices, store inside class as dictionaries
      */
     onLoad(): Promise<void>;
+    /**
+     * Add placeholder values for items missing from handbook
+     */
+    protected addMissingHandbookPrices(): void;
     getRoute(): string;
     /**
      * Iterate over all items of type "Item" in db and get template price, store in cache
@@ -41,7 +49,7 @@ export declare class RagfairPriceService implements OnLoad {
      */
     protected generateDynamicPrices(): void;
     /**
-     * Get the dynamic price for an item. If value doesn't exist, use static (handbook0) value.
+     * Get the dynamic price for an item. If value doesn't exist, use static (handbook) value.
      * if no static value, return 1
      * @param tplId Item tpl id to get price for
      * @returns price in roubles
@@ -105,14 +113,23 @@ export declare class RagfairPriceService implements OnLoad {
      * @param item base weapon
      * @param items weapon plus mods
      * @param existingPrice price of existing base weapon
-     * @returns
+     * @returns price of weapon in roubles
      */
     protected getWeaponPresetPrice(item: Item, items: Item[], existingPrice: number): number;
+    /**
+     * Get the highest price for an item that is stored in handbook or trader assorts
+     * @param itemTpl Item to get highest price of
+     * @returns rouble cost
+     */
+    protected getHighestHandbookOrTraderPriceAsRouble(itemTpl: string): number;
     /**
      * Attempt to get the default preset for a weapon, failing that get the first preset in the array
      * (assumes default = has encyclopedia entry)
      * @param presets weapon presets to choose from
      * @returns Default preset object
      */
-    protected getDefaultWeaponPreset(presets: Preset[], weapon: Item): Preset;
+    protected getWeaponPreset(presets: IPreset[], weapon: Item): {
+        isDefault: boolean;
+        preset: IPreset;
+    };
 }
