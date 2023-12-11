@@ -1,5 +1,5 @@
-import { Ixyz } from "./Ixyz";
-import { Item } from "./tables/IItem";
+import { Ixyz } from "@spt-aki/models/eft/common/Ixyz";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
 export interface ILooseLoot {
     spawnpointCount: SpawnpointCount;
     spawnpointsForced: SpawnpointsForced[];
@@ -16,11 +16,12 @@ export interface SpawnpointsForced {
 }
 export interface SpawnpointTemplate {
     Id: string;
-    IsStatic: boolean;
+    IsContainer: boolean;
     useGravity: boolean;
     randomRotation: boolean;
     Position: Ixyz;
     Rotation: Ixyz;
+    IsAlwaysSpawn: boolean;
     IsGroupPosition: boolean;
     GroupPositions: any[];
     Root: string;

@@ -1,5 +1,5 @@
-import { MinMax } from "../../common/MinMax";
-import { IBaseConfig } from "./IBaseConfig";
+import { MinMax } from "@spt-aki/models/common/MinMax";
+import { IBaseConfig } from "@spt-aki/models/spt/config/IBaseConfig";
 export interface IRagfairConfig extends IBaseConfig {
     kind: "aki-ragfair";
     /** How many seconds should pass before expired offers and procesed + player offers checked if sold */
@@ -41,7 +41,8 @@ export interface Dynamic {
     /** Use the highest trader price for an offer if its greater than the price in templates/prices.json */
     useTraderPriceForOffersIfHigher: boolean;
     /** Barter offer specific settings */
-    barter: Barter;
+    barter: IBarterDetails;
+    pack: IPackDetails;
     /** Dynamic offer price below handbook adjustment values */
     offerAdjustment: OfferAdjustment;
     /** How many offers should expire before an offer regeneration occurs */
@@ -49,9 +50,7 @@ export interface Dynamic {
     /** How many offers should be listed */
     offerItemCount: MinMax;
     /** How much should the price of an offer vary by (percent 0.8 = 80%, 1.2 = 120%) */
-    price: MinMax;
-    /** How much should the price of an offer vary by (percent 0.8 = 80%, 1.2 = 120%) */
-    presetPrice: MinMax;
+    priceRanges: IPriceRanges;
     /** Should default presets to listed only or should non-standard presets found in globals.json be listed too */
     showDefaultPresetsOnly: boolean;
     endTimeSeconds: MinMax;
@@ -71,8 +70,15 @@ export interface Dynamic {
     removeSeasonalItemsWhenNotInEvent: boolean;
     /** Flea blacklist settings */
     blacklist: Blacklist;
+    /** Dict of price limits keyed by item type */
+    unreasonableModPrices: Record<string, IUnreasonableModPrices>;
 }
-export interface Barter {
+export interface IPriceRanges {
+    default: MinMax;
+    preset: MinMax;
+    pack: MinMax;
+}
+export interface IBarterDetails {
     /** Should barter offers be generated */
     enable: boolean;
     /** Percentage change an offer is listed as a barter */
@@ -87,6 +93,18 @@ export interface Barter {
     minRoubleCostToBecomeBarter: number;
     /** Item Tpls to never be turned into a barter */
     itemTypeBlacklist: string[];
+}
+export interface IPackDetails {
+    /** Should pack offers be generated */
+    enable: boolean;
+    /** Percentage change an offer is listed as a pack */
+    chancePercent: number;
+    /** Min number of required items for a pack */
+    itemCountMin: number;
+    /** Max number of required items for a pack */
+    itemCountMax: number;
+    /** item types to allow being a pack */
+    itemTypeWhitelist: string[];
 }
 export interface OfferAdjustment {
     /** Shuld offer price be adjusted when below handbook price */
@@ -113,4 +131,9 @@ export interface Blacklist {
     enableQuestList: boolean;
     /** Should trader items that are blacklisted by bsg */
     traderItems: boolean;
+}
+export interface IUnreasonableModPrices {
+    enabled: boolean;
+    handbookPriceOverMultiplier: number;
+    newPriceHandbookMultiplier: number;
 }

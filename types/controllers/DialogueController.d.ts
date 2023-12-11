@@ -1,26 +1,34 @@
-import { DialogueHelper } from "../helpers/DialogueHelper";
-import { IGetAllAttachmentsResponse } from "../models/eft/dialog/IGetAllAttachmentsResponse";
-import { IGetFriendListDataResponse } from "../models/eft/dialog/IGetFriendListDataResponse";
-import { IGetMailDialogViewRequestData } from "../models/eft/dialog/IGetMailDialogViewRequestData";
-import { IGetMailDialogViewResponseData } from "../models/eft/dialog/IGetMailDialogViewResponseData";
-import { ISendMessageRequest } from "../models/eft/dialog/ISendMessageRequest";
-import { Dialogue, DialogueInfo, IAkiProfile, IUserDialogInfo, Message } from "../models/eft/profile/IAkiProfile";
-import { MessageType } from "../models/enums/MessageType";
-import { ILogger } from "../models/spt/utils/ILogger";
-import { SaveServer } from "../servers/SaveServer";
-import { GiftService } from "../services/GiftService";
-import { MailSendService } from "../services/MailSendService";
-import { HashUtil } from "../utils/HashUtil";
-import { TimeUtil } from "../utils/TimeUtil";
+import { DialogueHelper } from "@spt-aki/helpers/DialogueHelper";
+import { ProfileHelper } from "@spt-aki/helpers/ProfileHelper";
+import { IGetAllAttachmentsResponse } from "@spt-aki/models/eft/dialog/IGetAllAttachmentsResponse";
+import { IGetFriendListDataResponse } from "@spt-aki/models/eft/dialog/IGetFriendListDataResponse";
+import { IGetMailDialogViewRequestData } from "@spt-aki/models/eft/dialog/IGetMailDialogViewRequestData";
+import { IGetMailDialogViewResponseData } from "@spt-aki/models/eft/dialog/IGetMailDialogViewResponseData";
+import { ISendMessageRequest } from "@spt-aki/models/eft/dialog/ISendMessageRequest";
+import { Dialogue, DialogueInfo, IAkiProfile, IUserDialogInfo, Message } from "@spt-aki/models/eft/profile/IAkiProfile";
+import { MessageType } from "@spt-aki/models/enums/MessageType";
+import { ICoreConfig } from "@spt-aki/models/spt/config/ICoreConfig";
+import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
+import { ConfigServer } from "@spt-aki/servers/ConfigServer";
+import { SaveServer } from "@spt-aki/servers/SaveServer";
+import { GiftService } from "@spt-aki/services/GiftService";
+import { MailSendService } from "@spt-aki/services/MailSendService";
+import { HashUtil } from "@spt-aki/utils/HashUtil";
+import { RandomUtil } from "@spt-aki/utils/RandomUtil";
+import { TimeUtil } from "@spt-aki/utils/TimeUtil";
 export declare class DialogueController {
     protected logger: ILogger;
     protected saveServer: SaveServer;
     protected timeUtil: TimeUtil;
     protected dialogueHelper: DialogueHelper;
+    protected profileHelper: ProfileHelper;
+    protected randomUtil: RandomUtil;
     protected mailSendService: MailSendService;
     protected giftService: GiftService;
     protected hashUtil: HashUtil;
-    constructor(logger: ILogger, saveServer: SaveServer, timeUtil: TimeUtil, dialogueHelper: DialogueHelper, mailSendService: MailSendService, giftService: GiftService, hashUtil: HashUtil);
+    protected configServer: ConfigServer;
+    protected coreConfig: ICoreConfig;
+    constructor(logger: ILogger, saveServer: SaveServer, timeUtil: TimeUtil, dialogueHelper: DialogueHelper, profileHelper: ProfileHelper, randomUtil: RandomUtil, mailSendService: MailSendService, giftService: GiftService, hashUtil: HashUtil, configServer: ConfigServer);
     /** Handle onUpdate spt event */
     update(): void;
     /**
@@ -69,7 +77,7 @@ export declare class DialogueController {
      */
     protected getDialogByIdFromProfile(profile: IAkiProfile, request: IGetMailDialogViewRequestData): Dialogue;
     /**
-     *  Get the users involved in a mail between two entities
+     * Get the users involved in a mail between two entities
      * @param fullProfile Player profile
      * @param dialogUsers The participants of the mail
      * @returns IUserDialogInfo array
@@ -88,21 +96,37 @@ export declare class DialogueController {
      * @returns true if uncollected rewards found
      */
     protected messagesHaveUncollectedRewards(messages: Message[]): boolean;
-    /** Handle client/mail/dialog/remove */
-    removeDialogue(dialogueID: string, sessionID: string): void;
-    setDialoguePin(dialogueID: string, shouldPin: boolean, sessionID: string): void;
-    /** Handle client/mail/dialog/read */
-    setRead(dialogueIDs: string[], sessionID: string): void;
+    /**
+     * Handle client/mail/dialog/remove
+     * Remove an entire dialog with an entity (trader/user)
+     * @param dialogueId id of the dialog to remove
+     * @param sessionId Player id
+     */
+    removeDialogue(dialogueId: string, sessionId: string): void;
+    /** Handle client/mail/dialog/pin && Handle client/mail/dialog/unpin */
+    setDialoguePin(dialogueId: string, shouldPin: boolean, sessionId: string): void;
+    /**
+     * Handle client/mail/dialog/read
+     * Set a dialog to be read (no number alert/attachment alert)
+     * @param dialogueIds Dialog ids to set as read
+     * @param sessionId Player profile id
+     */
+    setRead(dialogueIds: string[], sessionId: string): void;
     /**
      * Handle client/mail/dialog/getAllAttachments
      * Get all uncollected items attached to mail in a particular dialog
-     * @param dialogueID Dialog to get mail attachments from
-     * @param sessionID Session id
+     * @param dialogueId Dialog to get mail attachments from
+     * @param sessionId Session id
      * @returns
      */
-    getAllAttachments(dialogueID: string, sessionID: string): IGetAllAttachmentsResponse;
+    getAllAttachments(dialogueId: string, sessionId: string): IGetAllAttachmentsResponse;
     /** client/mail/msg/send */
     sendMessage(sessionId: string, request: ISendMessageRequest): string;
+    /**
+     * Send responses back to player when they communicate with SPT friend on friends list
+     * @param sessionId Session Id
+     * @param request send message request
+     */
     protected handleChatWithSPTFriend(sessionId: string, request: ISendMessageRequest): void;
     protected getSptFriendData(friendId?: string): IUserDialogInfo;
     /**

@@ -1,18 +1,19 @@
-import { OnLoad } from "../di/OnLoad";
-import { HandbookHelper } from "../helpers/HandbookHelper";
-import { ItemHelper } from "../helpers/ItemHelper";
-import { PresetHelper } from "../helpers/PresetHelper";
-import { TraderHelper } from "../helpers/TraderHelper";
-import { IPreset } from "../models/eft/common/IGlobals";
-import { Item } from "../models/eft/common/tables/IItem";
-import { IBarterScheme } from "../models/eft/common/tables/ITrader";
-import { IRagfairConfig } from "../models/spt/config/IRagfairConfig";
-import { IRagfairServerPrices } from "../models/spt/ragfair/IRagfairServerPrices";
-import { ILogger } from "../models/spt/utils/ILogger";
-import { ConfigServer } from "../servers/ConfigServer";
-import { DatabaseServer } from "../servers/DatabaseServer";
-import { RandomUtil } from "../utils/RandomUtil";
-import { LocalisationService } from "./LocalisationService";
+import { OnLoad } from "@spt-aki/di/OnLoad";
+import { HandbookHelper } from "@spt-aki/helpers/HandbookHelper";
+import { ItemHelper } from "@spt-aki/helpers/ItemHelper";
+import { PresetHelper } from "@spt-aki/helpers/PresetHelper";
+import { TraderHelper } from "@spt-aki/helpers/TraderHelper";
+import { MinMax } from "@spt-aki/models/common/MinMax";
+import { IPreset } from "@spt-aki/models/eft/common/IGlobals";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
+import { IBarterScheme } from "@spt-aki/models/eft/common/tables/ITrader";
+import { IRagfairConfig } from "@spt-aki/models/spt/config/IRagfairConfig";
+import { IRagfairServerPrices } from "@spt-aki/models/spt/ragfair/IRagfairServerPrices";
+import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
+import { ConfigServer } from "@spt-aki/servers/ConfigServer";
+import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
+import { LocalisationService } from "@spt-aki/services/LocalisationService";
+import { RandomUtil } from "@spt-aki/utils/RandomUtil";
 /**
  * Stores flea prices for items as well as methods to interact with them
  */
@@ -35,10 +36,6 @@ export declare class RagfairPriceService implements OnLoad {
      * Generate static (handbook) and dynamic (prices.json) flea prices, store inside class as dictionaries
      */
     onLoad(): Promise<void>;
-    /**
-     * Add placeholder values for items missing from handbook
-     */
-    protected addMissingHandbookPrices(): void;
     getRoute(): string;
     /**
      * Iterate over all items of type "Item" in db and get template price, store in cache
@@ -91,9 +88,17 @@ export declare class RagfairPriceService implements OnLoad {
      * Generate a currency cost for an item and its mods
      * @param items Item with mods to get price for
      * @param desiredCurrency Currency price desired in
+     * @param isPackOffer Price is for a pack type offer
      * @returns cost of item in desired currency
      */
-    getDynamicOfferPrice(items: Item[], desiredCurrency: string): number;
+    getDynamicOfferPriceForOffer(items: Item[], desiredCurrency: string, isPackOffer: boolean): number;
+    /**
+     * Get different min/max price multipliers for different offer types (preset/pack/default)
+     * @param isPreset Offer is a preset
+     * @param isPack Offer is a pack
+     * @returns MinMax values
+     */
+    protected getOfferTypeRangeValues(isPreset: boolean, isPack: boolean): MinMax;
     /**
      * Check to see if an items price is below its handbook price and adjust accoring to values set to config/ragfair.json
      * @param itemPrice price of item
@@ -104,10 +109,10 @@ export declare class RagfairPriceService implements OnLoad {
     /**
      * Multiply the price by a randomised curve where n = 2, shift = 2
      * @param existingPrice price to alter
-     * @param isPreset is the item we're multiplying a preset
+     * @param rangeValues min and max to adjust price by
      * @returns multiplied price
      */
-    protected randomisePrice(existingPrice: number, isPreset: boolean): number;
+    protected randomiseOfferPrice(existingPrice: number, rangeValues: MinMax): number;
     /**
      * Calculate the cost of a weapon preset by adding together the price of its mods + base price of default weapon preset
      * @param item base weapon
