@@ -1,21 +1,21 @@
-import { HandbookHelper } from "../helpers/HandbookHelper";
-import { ItemHelper } from "../helpers/ItemHelper";
-import { PresetHelper } from "../helpers/PresetHelper";
-import { IFenceLevel, IPreset } from "../models/eft/common/IGlobals";
-import { IPmcData } from "../models/eft/common/IPmcData";
-import { Item } from "../models/eft/common/tables/IItem";
-import { ITemplateItem } from "../models/eft/common/tables/ITemplateItem";
-import { ITraderAssort } from "../models/eft/common/tables/ITrader";
-import { ITraderConfig } from "../models/spt/config/ITraderConfig";
-import { ILogger } from "../models/spt/utils/ILogger";
-import { ConfigServer } from "../servers/ConfigServer";
-import { DatabaseServer } from "../servers/DatabaseServer";
-import { HashUtil } from "../utils/HashUtil";
-import { JsonUtil } from "../utils/JsonUtil";
-import { RandomUtil } from "../utils/RandomUtil";
-import { TimeUtil } from "../utils/TimeUtil";
-import { ItemFilterService } from "./ItemFilterService";
-import { LocalisationService } from "./LocalisationService";
+import { HandbookHelper } from "@spt-aki/helpers/HandbookHelper";
+import { ItemHelper } from "@spt-aki/helpers/ItemHelper";
+import { PresetHelper } from "@spt-aki/helpers/PresetHelper";
+import { IFenceLevel, IPreset } from "@spt-aki/models/eft/common/IGlobals";
+import { IPmcData } from "@spt-aki/models/eft/common/IPmcData";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
+import { ITemplateItem } from "@spt-aki/models/eft/common/tables/ITemplateItem";
+import { ITraderAssort } from "@spt-aki/models/eft/common/tables/ITrader";
+import { ITraderConfig } from "@spt-aki/models/spt/config/ITraderConfig";
+import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
+import { ConfigServer } from "@spt-aki/servers/ConfigServer";
+import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
+import { ItemFilterService } from "@spt-aki/services/ItemFilterService";
+import { LocalisationService } from "@spt-aki/services/LocalisationService";
+import { HashUtil } from "@spt-aki/utils/HashUtil";
+import { JsonUtil } from "@spt-aki/utils/JsonUtil";
+import { RandomUtil } from "@spt-aki/utils/RandomUtil";
+import { TimeUtil } from "@spt-aki/utils/TimeUtil";
 /**
  * Handle actions surrounding Fence
  * e.g. generating or refreshing assorts / get next refresh time
@@ -44,12 +44,12 @@ export declare class FenceService {
      * Replace main fence assort with new assort
      * @param assort New assorts to replace old with
      */
-    protected setFenceAssort(assort: ITraderAssort): void;
+    setFenceAssort(assort: ITraderAssort): void;
     /**
      * Replace high rep level fence assort with new assort
      * @param assort New assorts to replace old with
      */
-    protected setFenceDiscountAssort(assort: ITraderAssort): void;
+    setFenceDiscountAssort(assort: ITraderAssort): void;
     /**
      * Get assorts player can purchase
      * Adjust prices based on fence level of player
@@ -140,7 +140,7 @@ export declare class FenceService {
         max: number;
     }>, loyaltyLevel: number): void;
     /**
-     * Get stack size ofr a singular item (no mods)
+     * Get stack size of a singular item (no mods)
      * @param itemDbDetails item being added to fence
      * @returns Stack size
      */
@@ -153,6 +153,18 @@ export declare class FenceService {
      * @param loyaltyLevel loyalty level to requre item at
      */
     protected addPresets(desiredPresetCount: number, defaultWeaponPresets: Record<string, IPreset>, assorts: ITraderAssort, loyaltyLevel: number): void;
+    /**
+     * Remove parts of a weapon prior to being listed on flea
+     * @param weaponAndMods Weapon to remove parts from
+     */
+    protected removeRandomPartsOfWeapon(weaponAndMods: Item[]): void;
+    /**
+     * Roll % chance check to see if item should be removed
+     * @param weaponMod Weapon mod being checked
+     * @param itemsBeingDeleted Current list of items on weapon being deleted
+     * @returns True if item will be removed
+     */
+    protected presetModItemWillBeRemoved(weaponMod: Item, itemsBeingDeleted: string[]): boolean;
     /**
      * Randomise items' upd properties e.g. med packs/weapons/armor
      * @param itemDetails Item being randomised

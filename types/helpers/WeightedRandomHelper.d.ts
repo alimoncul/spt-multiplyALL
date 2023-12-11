@@ -1,6 +1,6 @@
 export declare class WeightedRandomHelper {
     /**
-     * USE getWeightedValue() WHERE POSSIBLE
+     * @deprecated USE getWeightedValue() WHERE POSSIBLE
      * Gets a tplId from a weighted dictionary
      * @param {tplId: weighting[]} itemArray
      * @returns tplId
@@ -25,7 +25,7 @@ export declare class WeightedRandomHelper {
      * @param {number[]} weights
      * @returns {{item: any, index: number}}
      */
-    weightedRandom(items: string | any[], weights: string | any[]): {
+    weightedRandom(items: any[], weights: any[]): {
         item: any;
         index: number;
     };

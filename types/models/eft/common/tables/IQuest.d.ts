@@ -1,7 +1,7 @@
-import { QuestRewardType } from "../../../enums/QuestRewardType";
-import { QuestStatus } from "../../../enums/QuestStatus";
-import { QuestTypeEnum } from "../../../enums/QuestTypeEnum";
-import { Item } from "./IItem";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
+import { QuestRewardType } from "@spt-aki/models/enums/QuestRewardType";
+import { QuestStatus } from "@spt-aki/models/enums/QuestStatus";
+import { QuestTypeEnum } from "@spt-aki/models/enums/QuestTypeEnum";
 export interface IQuest {
     /** SPT addition - human readable quest name */
     QuestName?: string;
@@ -32,6 +32,8 @@ export interface IQuest {
     changeQuestMessageText: string;
     /** "Pmc" or "Scav" */
     side: string;
+    /** Status of quest to player */
+    sptStatus?: QuestStatus;
 }
 export interface Conditions {
     Started: AvailableForConditions[];
@@ -69,6 +71,7 @@ export interface AvailableForProps {
     zoneId?: string;
     type?: boolean;
     countInRaid?: boolean;
+    globalQuestCounterId?: any;
 }
 export interface AvailableForCounter {
     id: string;

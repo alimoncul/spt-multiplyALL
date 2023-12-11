@@ -1,6 +1,6 @@
-import { MinMax } from "../../../models/common/MinMax";
-import { BossLocationSpawn, Wave } from "../../../models/eft/common/ILocationBase";
-import { IBaseConfig } from "./IBaseConfig";
+import { MinMax } from "@spt-aki/models/common/MinMax";
+import { BossLocationSpawn, Wave } from "@spt-aki/models/eft/common/ILocationBase";
+import { IBaseConfig } from "@spt-aki/models/spt/config/IBaseConfig";
 export interface ILocationConfig extends IBaseConfig {
     kind: "aki-location";
     /** Waves with a min/max of the same value don't spawn any bots, bsg only spawn the difference between min and max */
@@ -27,6 +27,17 @@ export interface ILocationConfig extends IBaseConfig {
     enableBotTypeLimits: boolean;
     /** Add limits to a locations base.MinMaxBots array if enableBotTypeLimits is true*/
     botTypeLimits: Record<string, IBotTypeLimit[]>;
+    /** container randomisation settings */
+    containerRandomisationSettings: IContainerRandomistionSettings;
+    /** How full must a random loose magazine be %*/
+    minFillLooseMagazinePercent: number;
+    /** How full must a random static magazine be %*/
+    minFillStaticMagazinePercent: number;
+    allowDuplicateItemsInStaticContainers: boolean;
+    /** Key: map, value: loose loot ids to ignore */
+    looseLootBlacklist: Record<string, string[]>;
+    /** Key: map, value: settings to control how long scav raids are*/
+    scavRaidTimeSettings: IScavRaidTimeSettings;
 }
 export interface IFixEmptyBotWavesSettings {
     enabled: boolean;
@@ -67,4 +78,31 @@ export interface LootMultiplier {
     tarkovstreets: number;
     terminal: number;
     town: number;
+}
+export interface IContainerRandomistionSettings {
+    enabled: boolean;
+    /** What maps can use the container randomisation feature */
+    maps: Record<string, boolean>;
+    /** Some container types don't work when randomised */
+    containerTypesToNotRandomise: string[];
+    containerGroupMinSizeMultiplier: number;
+    containerGroupMaxSizeMultiplier: number;
+}
+export interface IScavRaidTimeSettings {
+    settings: IScavRaidTimeConfigSettings;
+    maps: Record<string, IScavRaidTimeLocationSettings>;
+}
+export interface IScavRaidTimeConfigSettings {
+    trainArrivalDelayObservedSeconds: number;
+}
+export interface IScavRaidTimeLocationSettings {
+    /** Should loot be reduced by same percent length of raid is reduced by */
+    reduceLootByPercent: boolean;
+    minStaticLootPercent: number;
+    minDynamicLootPercent: number;
+    /** Chance raid time is reduced */
+    reducedChancePercent: number;
+    reductionPercentWeights: Record<string, number>;
+    /** Should bot waves be removed / spawn times be adjusted */
+    adjustWaves: boolean;
 }

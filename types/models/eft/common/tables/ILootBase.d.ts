@@ -1,5 +1,5 @@
-import { Ixyz } from "../Ixyz";
-import { Item } from "./IItem";
+import { Ixyz } from "@spt-aki/models/eft/common/Ixyz";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
 export interface ILootBase {
     staticAmmo: Record<string, IStaticAmmoDetails[]>;
     staticContainers: Record<string, IStaticContainerDetails>;
@@ -11,31 +11,30 @@ export interface IStaticAmmoDetails {
 }
 export interface IStaticContainerDetails {
     staticWeapons: IStaticWeaponProps[];
-    staticContainers: IStaticContainerProps[];
+    staticContainers: IStaticContainerData[];
     staticForced: IStaticForcedProps[];
 }
-export interface IStaticWeaponProps {
+export interface IStaticContainerData {
+    probability: number;
+    template: IStaticContainerProps;
+}
+export interface IStaticPropsBase {
     Id: string;
-    IsStatic: boolean;
+    IsContainer: boolean;
     useGravity: boolean;
     randomRotation: boolean;
     Position: Ixyz;
     Rotation: Ixyz;
     IsGroupPosition: boolean;
+    IsAlwaysSpawn: boolean;
     GroupPositions: any[];
     Root: string;
+    Items: any[];
+}
+export interface IStaticWeaponProps extends IStaticPropsBase {
     Items: Item[];
 }
-export interface IStaticContainerProps {
-    Id: string;
-    IsStatic: boolean;
-    useGravity: boolean;
-    randomRotation: boolean;
-    Position: Ixyz;
-    Rotation: Ixyz;
-    IsGroupPosition: boolean;
-    GroupPositions: any[];
-    Root: string;
+export interface IStaticContainerProps extends IStaticPropsBase {
     Items: StaticItem[];
 }
 export interface StaticItem {

@@ -1,30 +1,31 @@
-import { IPmcData } from "../models/eft/common/IPmcData";
-import { ITraderAssort } from "../models/eft/common/tables/ITrader";
-import { IItemEventRouterResponse } from "../models/eft/itemEvent/IItemEventRouterResponse";
-import { IAkiProfile } from "../models/eft/profile/IAkiProfile";
-import { IRagfairOffer } from "../models/eft/ragfair/IRagfairOffer";
-import { ISearchRequestData } from "../models/eft/ragfair/ISearchRequestData";
-import { IQuestConfig } from "../models/spt/config/IQuestConfig";
-import { IRagfairConfig } from "../models/spt/config/IRagfairConfig";
-import { ILogger } from "../models/spt/utils/ILogger";
-import { EventOutputHolder } from "../routers/EventOutputHolder";
-import { ConfigServer } from "../servers/ConfigServer";
-import { DatabaseServer } from "../servers/DatabaseServer";
-import { SaveServer } from "../servers/SaveServer";
-import { LocaleService } from "../services/LocaleService";
-import { LocalisationService } from "../services/LocalisationService";
-import { RagfairOfferService } from "../services/RagfairOfferService";
-import { HashUtil } from "../utils/HashUtil";
-import { TimeUtil } from "../utils/TimeUtil";
-import { DialogueHelper } from "./DialogueHelper";
-import { ItemHelper } from "./ItemHelper";
-import { PaymentHelper } from "./PaymentHelper";
-import { PresetHelper } from "./PresetHelper";
-import { ProfileHelper } from "./ProfileHelper";
-import { RagfairHelper } from "./RagfairHelper";
-import { RagfairServerHelper } from "./RagfairServerHelper";
-import { RagfairSortHelper } from "./RagfairSortHelper";
-import { TraderHelper } from "./TraderHelper";
+import { ItemHelper } from "@spt-aki/helpers/ItemHelper";
+import { PaymentHelper } from "@spt-aki/helpers/PaymentHelper";
+import { PresetHelper } from "@spt-aki/helpers/PresetHelper";
+import { ProfileHelper } from "@spt-aki/helpers/ProfileHelper";
+import { RagfairHelper } from "@spt-aki/helpers/RagfairHelper";
+import { RagfairServerHelper } from "@spt-aki/helpers/RagfairServerHelper";
+import { RagfairSortHelper } from "@spt-aki/helpers/RagfairSortHelper";
+import { TraderHelper } from "@spt-aki/helpers/TraderHelper";
+import { IPmcData } from "@spt-aki/models/eft/common/IPmcData";
+import { Item } from "@spt-aki/models/eft/common/tables/IItem";
+import { ITraderAssort } from "@spt-aki/models/eft/common/tables/ITrader";
+import { IItemEventRouterResponse } from "@spt-aki/models/eft/itemEvent/IItemEventRouterResponse";
+import { IAkiProfile } from "@spt-aki/models/eft/profile/IAkiProfile";
+import { IRagfairOffer } from "@spt-aki/models/eft/ragfair/IRagfairOffer";
+import { ISearchRequestData } from "@spt-aki/models/eft/ragfair/ISearchRequestData";
+import { IQuestConfig } from "@spt-aki/models/spt/config/IQuestConfig";
+import { IRagfairConfig } from "@spt-aki/models/spt/config/IRagfairConfig";
+import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
+import { EventOutputHolder } from "@spt-aki/routers/EventOutputHolder";
+import { ConfigServer } from "@spt-aki/servers/ConfigServer";
+import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
+import { SaveServer } from "@spt-aki/servers/SaveServer";
+import { LocaleService } from "@spt-aki/services/LocaleService";
+import { LocalisationService } from "@spt-aki/services/LocalisationService";
+import { MailSendService } from "@spt-aki/services/MailSendService";
+import { RagfairOfferService } from "@spt-aki/services/RagfairOfferService";
+import { HashUtil } from "@spt-aki/utils/HashUtil";
+import { TimeUtil } from "@spt-aki/utils/TimeUtil";
 export declare class RagfairOfferHelper {
     protected logger: ILogger;
     protected timeUtil: TimeUtil;
@@ -33,7 +34,6 @@ export declare class RagfairOfferHelper {
     protected databaseServer: DatabaseServer;
     protected traderHelper: TraderHelper;
     protected saveServer: SaveServer;
-    protected dialogueHelper: DialogueHelper;
     protected itemHelper: ItemHelper;
     protected paymentHelper: PaymentHelper;
     protected presetHelper: PresetHelper;
@@ -44,15 +44,16 @@ export declare class RagfairOfferHelper {
     protected ragfairOfferService: RagfairOfferService;
     protected localeService: LocaleService;
     protected localisationService: LocalisationService;
+    protected mailSendService: MailSendService;
     protected configServer: ConfigServer;
     protected static goodSoldTemplate: string;
     protected ragfairConfig: IRagfairConfig;
     protected questConfig: IQuestConfig;
-    constructor(logger: ILogger, timeUtil: TimeUtil, hashUtil: HashUtil, eventOutputHolder: EventOutputHolder, databaseServer: DatabaseServer, traderHelper: TraderHelper, saveServer: SaveServer, dialogueHelper: DialogueHelper, itemHelper: ItemHelper, paymentHelper: PaymentHelper, presetHelper: PresetHelper, profileHelper: ProfileHelper, ragfairServerHelper: RagfairServerHelper, ragfairSortHelper: RagfairSortHelper, ragfairHelper: RagfairHelper, ragfairOfferService: RagfairOfferService, localeService: LocaleService, localisationService: LocalisationService, configServer: ConfigServer);
+    constructor(logger: ILogger, timeUtil: TimeUtil, hashUtil: HashUtil, eventOutputHolder: EventOutputHolder, databaseServer: DatabaseServer, traderHelper: TraderHelper, saveServer: SaveServer, itemHelper: ItemHelper, paymentHelper: PaymentHelper, presetHelper: PresetHelper, profileHelper: ProfileHelper, ragfairServerHelper: RagfairServerHelper, ragfairSortHelper: RagfairSortHelper, ragfairHelper: RagfairHelper, ragfairOfferService: RagfairOfferService, localeService: LocaleService, localisationService: LocalisationService, mailSendService: MailSendService, configServer: ConfigServer);
     /**
      * Passthrough to ragfairOfferService.getOffers(), get flea offers a player should see
-     * @param searchRequest
-     * @param itemsToAdd
+     * @param searchRequest Data from client
+     * @param itemsToAdd ragfairHelper.filterCategories()
      * @param traderAssorts Trader assorts
      * @param pmcProfile Player profile
      * @returns Offers the player should see
@@ -67,6 +68,13 @@ export declare class RagfairOfferHelper {
      * @returns IRagfairOffer array
      */
     getOffersForBuild(searchRequest: ISearchRequestData, itemsToAdd: string[], traderAssorts: Record<string, ITraderAssort>, pmcProfile: IPmcData): IRagfairOffer[];
+    /**
+     * Check if offer is from trader standing the player does not have
+     * @param offer Offer to check
+     * @param pmcProfile Player profile
+     * @returns True if item is locked, false if item is purchaseable
+     */
+    protected traderOfferLockedBehindLoyaltyLevel(offer: IRagfairOffer, pmcProfile: IPmcData): boolean;
     /**
      * Check if offer item is quest locked for current player by looking at sptQuestLocked property in traders barter_scheme
      * @param offer Offer to check is quest locked
@@ -112,27 +120,42 @@ export declare class RagfairOfferHelper {
      */
     protected getProfileOffers(sessionID: string): IRagfairOffer[];
     /**
-     * Delete an offer from a desired profile
+     * Delete an offer from a desired profile and from ragfair offers
      * @param sessionID Session id of profile to delete offer from
-     * @param offerId Offer id to delete
+     * @param offerId Id of offer to delete
      */
-    protected deleteOfferByOfferId(sessionID: string, offerId: string): void;
+    protected deleteOfferById(sessionID: string, offerId: string): void;
     /**
      * Complete the selling of players' offer
      * @param sessionID Session id
      * @param offer Sold offer details
      * @param boughtAmount Amount item was purchased for
-     * @returns Client response
+     * @returns IItemEventRouterResponse
      */
     protected completeOffer(sessionID: string, offer: IRagfairOffer, boughtAmount: number): IItemEventRouterResponse;
     /**
+     * Get a localised message for when players offer has sold on flea
+     * @param itemTpl Item sold
+     * @param boughtAmount How many were purchased
+     * @returns Localised message text
+     */
+    protected getLocalisedOfferSoldMessage(itemTpl: string, boughtAmount: number): string;
+    /**
      * Should a ragfair offer be visible to the player
-     * @param info Search request
+     * @param searchRequest Search request
      * @param itemsToAdd ?
      * @param traderAssorts Trader assort items
      * @param offer The flea offer
      * @param pmcProfile Player profile
      * @returns True = should be shown to player
      */
-    isDisplayableOffer(info: ISearchRequestData, itemsToAdd: string[], traderAssorts: Record<string, ITraderAssort>, offer: IRagfairOffer, pmcProfile: IPmcData): boolean;
+    isDisplayableOffer(searchRequest: ISearchRequestData, itemsToAdd: string[], traderAssorts: Record<string, ITraderAssort>, offer: IRagfairOffer, pmcProfile: IPmcData): boolean;
+    /**
+     * Is items quality value within desired range
+     * @param item Item to check quality of
+     * @param min Desired minimum quality
+     * @param max Desired maximum quality
+     * @returns True if in range
+     */
+    protected itemQualityInRange(item: Item, min: number, max: number): boolean;
 }
