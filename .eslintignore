@@ -7,8 +7,3 @@ types/
 *.json
 *.txt
 *.exe
-
-src/html/*
-
-packageBuild.js
-copy-server.js
