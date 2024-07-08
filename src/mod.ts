@@ -1,18 +1,18 @@
 import { DependencyContainer } from "tsyringe";
 import https from "https";
 
-import { IPostDBLoadMod } from "@spt-aki/models/external/IPostDBLoadMod";
-import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
-import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
-import { IDatabaseTables } from "@spt-aki/models/spt/server/IDatabaseTables";
-import { ICoreConfig } from "@spt-aki/models/spt/config/ICoreConfig";
-import { IQuestConfig } from "@spt-aki/models/spt/config/IQuestConfig";
-import { ILocationConfig } from "@spt-aki/models/spt/config/ILocationConfig";
-import { IHideoutConfig } from "@spt-aki/models/spt/config/IHideoutConfig";
-import { IInRaidConfig } from "@spt-aki/models/spt/config/IInRaidConfig";
+import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
+import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
+import { ILogger } from "@spt/models/spt/utils/ILogger";
+import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
+import { ICoreConfig } from "@spt/models/spt/config/ICoreConfig";
+import { IQuestConfig } from "@spt/models/spt/config/IQuestConfig";
+import { ILocationConfig } from "@spt/models/spt/config/ILocationConfig";
+import { IHideoutConfig } from "@spt/models/spt/config/IHideoutConfig";
+import { IInRaidConfig } from "@spt/models/spt/config/IInRaidConfig";
 
-import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
-import { ConfigServer } from "@spt-aki/servers/ConfigServer";
+import { DatabaseServer } from "@spt/servers/DatabaseServer";
+import { ConfigServer } from "@spt/servers/ConfigServer";
 
 import packageJson from "../package.json";
 import config from "../config.json";
