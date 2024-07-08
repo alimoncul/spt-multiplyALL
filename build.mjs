@@ -29,11 +29,10 @@
  * @version v1.0.0
  */
 
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import fs from "fs-extra";
-import os from "os";
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import ignore from "ignore";
 import archiver from "archiver";
 import winston from "winston";
@@ -47,7 +46,7 @@ const logColors = {
     error: "red",
     warn: "yellow",
     info: "grey",
-    success: "green"
+    success: "green",
 };
 winston.addColors(logColors);
 
@@ -58,7 +57,7 @@ const logger = winston.createLogger({
         error: 0,
         warn: 1,
         success: 2,
-        info: 3
+        info: 3,
     },
     format: winston.format.combine(
         winston.format.colorize(),
@@ -68,9 +67,9 @@ const logger = winston.createLogger({
     ),
     transports: [
         new winston.transports.Console({
-            level: verbose ? "info" : "success"
-        })
-    ]
+            level: verbose ? "info" : "success",
+        }),
+    ],
 });
 
 /**
@@ -141,19 +140,16 @@ async function main() {
             logger.log("success", "To see a detailed build log, use `npm run buildinfo`.");
             logger.log("success", "------------------------------------");
         }
-    }
-    catch (err) {
+    } catch (err) {
         // If any of the file operations fail, log the error.
         logger.log("error", "An error occurred: " + err);
-    }
-    finally {
+    } finally {
         // Clean up the temporary directory, even if the build fails.
         if (projectDir) {
             try {
                 await fs.promises.rm(projectDir, { force: true, recursive: true });
                 logger.log("info", "Cleaned temporary directory.");
-            }
-            catch (err) {
+            } catch (err) {
                 logger.log("error", "Failed to clean temporary directory: " + err);
             }
         }
@@ -168,7 +164,7 @@ async function main() {
  * @returns {string} The absolute path of the current working directory.
  */
 function getCurrentDirectory() {
-    return dirname(fileURLToPath(import.meta.url));
+    return path.dirname(fileURLToPath(import.meta.url));
 }
 
 /**
@@ -189,8 +185,7 @@ async function loadBuildIgnoreFile(currentDir) {
 
         // Return a new ignore instance and add the rules from the .buildignore file (split by newlines).
         return ignore().add(fileContent.split("\n"));
-    }
-    catch (err) {
+    } catch (err) {
         logger.log("warn", "Failed to read .buildignore file. No files or directories will be ignored.");
 
         // Return an empty ignore instance, ensuring the build process can continue.
@@ -229,10 +224,9 @@ function createProjectName(packageJson) {
     // Remove any non-alphanumeric characters from the author and name.
     const author = packageJson.author.replace(/\W/g, "");
     const name = packageJson.name.replace(/\W/g, "");
-    const version = packageJson.version;
 
     // Ensure the name is lowercase, as per the package.json specification.
-    return `${author}-${name}-${version}`.toLowerCase();
+    return `${author}-${name}`.toLowerCase();
 }
 
 /**
@@ -312,8 +306,7 @@ async function copyFiles(srcDir, destDir, ignoreHandler) {
                 // to copyFiles to handle copying the contents of the directory.
                 await fs.ensureDir(destPath);
                 copyOperations.push(copyFiles(srcPath, destPath, ignoreHandler));
-            }
-            else {
+            } else {
                 // If the entry is a file, add a copyFile operation to the copyOperations array and log the event when
                 // the operation is successful.
                 copyOperations.push(
@@ -326,8 +319,7 @@ async function copyFiles(srcDir, destDir, ignoreHandler) {
 
         // Await all copy operations to ensure all files and directories are copied before exiting the function.
         await Promise.all(copyOperations);
-    }
-    catch (err) {
+    } catch (err) {
         // Log an error message if any error occurs during the copy process.
         logger.log("error", "Error copying files: " + err);
     }
@@ -349,7 +341,7 @@ async function createZipFile(directoryToZip, zipFilePath, containerDirName) {
 
         // Create a new archiver instance with ZIP format and maximum compression level.
         const archive = archiver("zip", {
-            zlib: { level: 9 }
+            zlib: { level: 9 },
         });
 
         // Set up an event listener for the 'close' event to resolve the promise when the archiver has finalized.
@@ -363,8 +355,7 @@ async function createZipFile(directoryToZip, zipFilePath, containerDirName) {
         archive.on("warning", function (err) {
             if (err.code === "ENOENT") {
                 logger.log("warn", `Archiver issued a warning: ${err.code} - ${err.message}`);
-            }
-            else {
+            } else {
                 reject(err);
             }
         });

@@ -1,6 +1,11 @@
 {
     "name": "MultiplyALL",
-    "version": "3.0.2",
+    "version": "4.0.0",
+    "sptVersion": "~3.9",
+    "loadBefore": [],
+    "loadAfter": [],
+    "incompatibilities": [],
+    "isBundleMod": false,
     "main": "src/mod.js",
     "license": "MIT",
     "author": "Alim Oncul",
@@ -21,7 +26,6 @@
         "eslint": "8.57",
         "fs-extra": "11.2",
         "ignore": "^5.2",
-        "os": "^0.1",
         "tsyringe": "4.8.0",
         "typescript": "5.4",
         "winston": "3.12"
