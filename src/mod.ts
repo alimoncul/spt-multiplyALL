@@ -1,5 +1,4 @@
 import { DependencyContainer } from "tsyringe";
-import https from "https";
 
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
@@ -14,7 +13,6 @@ import { IInRaidConfig } from "@spt/models/spt/config/IInRaidConfig";
 import { DatabaseServer } from "@spt/servers/DatabaseServer";
 import { ConfigServer } from "@spt/servers/ConfigServer";
 
-import packageJson from "../package.json";
 import config from "../config.json";
 
 class MultiplyALL implements IPostDBLoadMod 
@@ -50,47 +48,6 @@ class MultiplyALL implements IPostDBLoadMod
         this.multiplyMagazineSpeeds();
         this.multiplyHideout();
         this.multiplyKills();
-        this.updateController();
-    }
-    updateController() 
-    {
-        let data = "";
-        let parsed;
-        https.get({
-            hostname: "api.github.com",
-            path: "/repos/alimoncul/spt-multiplyALL/releases",
-            method: "GET",
-            headers: { "User-Agent": "MultiplyALL Version Checker" }
-        }, (res) => 
-        {
-            res.on("data", (chunk) => 
-            {
-                data += chunk; 
-            });
-            res.on("end", () => 
-            {
-                try 
-                {
-                    parsed = JSON.parse(data); 
-                }
-                catch (error) 
-                {
-                    this.logger.error(`[MultiplyALL-VersionChecker]: Could not check new versions, Error:${error}`); 
-                } 
-            });
-        })
-            .on("error", (e) => 
-            {
-                this.logger.error(`[MultiplyALL-VersionChecker]: Could not check new versions, Error:${e}`); 
-            })
-            .on("close", () => 
-            { 
-                const latestVersionAvailable = parsed?.[0]?.tag_name;
-                if (latestVersionAvailable && latestVersionAvailable !== packageJson.version) 
-                {
-                    this.logger.warning("[MultiplyALL-VersionChecker]: New version available, please check the mod page!");
-                }
-            });
     }
     multiplyHideout() 
     {
