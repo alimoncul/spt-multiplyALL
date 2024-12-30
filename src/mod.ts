@@ -57,13 +57,15 @@ class MultiplyALL implements IPostDBLoadMod
             // 5811ce572459770cba1a34ea Left Behind stash 10x38
             // 5811ce662459770f6f490f32 Prepare for escape stash 10x48
             // 5811ce772459770e9e5f9532 Edge of darkness stash 10x68
+            // 6602bcf19cc643f44a04274b Unheard edition stash 10x72
             try 
             {
                 this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
                 this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
                 this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
                 this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
-                this.logger.info(`[MultiplyALL-HIDEOUT]: Stash size multiplied by ${config.hideout.stashMultiplier}, New sizes: Standard stash(10x${this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV}) Left Behind stash(10x${this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV}) Prepare for escape stash(10x${this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV}) Edge of darkness stash(10x${this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV})`);
+                this.tables.templates.items["6602bcf19cc643f44a04274b"]._props.Grids[0]._props.cellsV = Math.round(this.tables.templates.items["6602bcf19cc643f44a04274b"]._props.Grids[0]._props.cellsV * config.hideout.stashMultiplier);
+                this.logger.info(`[MultiplyALL-HIDEOUT]: Stash size multiplied by ${config.hideout.stashMultiplier}, New sizes: Standard stash(10x${this.tables.templates.items["566abbc34bdc2d92178b4576"]._props.Grids[0]._props.cellsV}) Left Behind stash(10x${this.tables.templates.items["5811ce572459770cba1a34ea"]._props.Grids[0]._props.cellsV}) Prepare for escape stash(10x${this.tables.templates.items["5811ce662459770f6f490f32"]._props.Grids[0]._props.cellsV}) Edge of darkness stash(10x${this.tables.templates.items["5811ce772459770e9e5f9532"]._props.Grids[0]._props.cellsV}) Unheard edition stash(10x${this.tables.templates.items["6602bcf19cc643f44a04274b"]._props.Grids[0]._props.cellsV})`);
             }
             catch (error) 
             {
@@ -72,9 +74,9 @@ class MultiplyALL implements IPostDBLoadMod
         }
         if (config.hideout.productionSpeedMultiplier !== 1) 
         {
-            for (let i = 0; i < this.tables.hideout.production.length; i+=1) 
+            for (let i = 0; i < this.tables.hideout.production.recipes.length; i+=1) 
             {
-                this.tables.hideout.production[i].productionTime = Math.round(this.tables.hideout.production[i].productionTime / config.hideout.productionSpeedMultiplier);
+                this.tables.hideout.production.recipes[i].productionTime = Math.round(this.tables.hideout.production.recipes[i].productionTime / config.hideout.productionSpeedMultiplier);
             }
             this.logger.info(`[MultiplyALL-HIDEOUT]: Production speed multiplied by ${config.hideout.productionSpeedMultiplier}`);
         }
@@ -114,7 +116,7 @@ class MultiplyALL implements IPostDBLoadMod
         }
         if (config.reputation.scavExtractMultiplier !== 1) 
         {
-            this.raidConfig.scavExtractGain *= config.reputation.scavExtractMultiplier;
+            this.raidConfig.scavExtractStandingGain *= config.reputation.scavExtractMultiplier;
             this.logger.info(`[MultiplyALL-REPUTATION]: scavExtractGain multiplied by: ${config.reputation.scavExtractMultiplier}`);
         }
     }
@@ -240,7 +242,7 @@ class MultiplyALL implements IPostDBLoadMod
                     quests[Object.keys(quests)[i]].rewards.Success[experienceRewardIndex] = reward;
                     updatedQuestExperience += 1;
                 }
-                if (reputationRewardIndex && config.reputation.questMultiplier !== 1) 
+                if (reputationRewardIndex >= 0 && config.reputation.questMultiplier !== 1) 
                 {
                     const reputation = quest.rewards.Success[reputationRewardIndex];
                     if (reputation?.value) 
