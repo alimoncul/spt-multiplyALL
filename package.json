@@ -1,7 +1,7 @@
 {
     "name": "MultiplyALL",
-    "version": "4.0.1",
-    "sptVersion": "~3.9",
+    "version": "5.0.0",
+    "sptVersion": "~3.10",
     "loadBefore": [],
     "loadAfter": [],
     "incompatibilities": [],
@@ -9,7 +9,6 @@
     "main": "src/mod.js",
     "license": "MIT",
     "author": "Alim Oncul",
-    "akiVersion": "~3.8",
     "engines": {
         "node": "20.11"
     },
